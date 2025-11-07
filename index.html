@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Port Scanner & Server Manager</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .badge{padding:.2rem .5rem;border-radius:9999px;font-size:.75rem}
+    .badge-blue{background:#0a3d62;color:#4fc3f7;border:1px solid #4fc3f7}
+    .badge-green{background:#1b5e20;color:#69f0ae;border:1px solid #69f0ae}
+    .badge-gray{background:#37474f;color:#b0bec5;border:1px solid #b0bec5}
+    .badge-purple{background:#4a148c;color:#ea80fc;border:1px solid #ea80fc}
+    .badge-orange{background:#e65100;color:#ffd54f;border:1px solid #ffd54f}
+    .spin{animation: spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+    .neon-glow{text-shadow:0 0 10px currentColor,0 0 20px currentColor,0 0 30px currentColor}
+    .terminal-border{border:1px solid #00e5ff;box-shadow:0 0 15px #00e5ff}
+    .field{display:flex;gap:.5rem;align-items:center}
+    .label{min-width:9rem}
+    .kbd{padding:.1rem .4rem;border:1px solid #777;border-radius:.25rem;font-size:.75rem}
+  </style>
+</head>
+<body class="bg-black text-white min-h-screen font-mono">
+  <div class="max-w-7xl mx-auto p-4 md:p-8">
+    <!-- Header -->
+    <header class="mb-6 text-center">
+      <h1 class="text-4xl font-bold text-cyan-400 neon-glow mb-2">🚀 PORT SCANNER & SERVER MANAGER</h1>
+      <p class="text-green-400">Scan ports • Kill processes • Launch servers • Full control</p>
+    </header>
+
+    <!-- Settings -->
+    <section class="bg-gray-900 rounded-xl terminal-border p-4 mb-6">
+      <div class="flex items-center justify-between mb-3">
+        <div class="text-cyan-300 font-semibold neon-glow">⚙️ SETTINGS</div>
+        <div class="text-xs text-gray-400">Tip: Press <span class="kbd">S</span> to focus the URL field quickly</div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div class="field">
+          <label class="label text-cyan-400 text-sm">API Base URL</label>
+          <input id="api-base" type="text" placeholder="http://127.0.0.1:5502" class="w-full p-2 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300" />
+        </div>
+        <div class="field">
+          <label class="label text-cyan-400 text-sm">API Token</label>
+          <input id="api-token" type="password" placeholder="(optional)" class="w-full p-2 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300" />
+        </div>
+        <div class="flex gap-2 items-end">
+          <button id="btn-save-settings" class="w-full px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-lg hover:from-cyan-700 hover:to-blue-700">Save</button>
+          <button id="btn-test" class="w-full px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 rounded-lg hover:from-green-700 hover:to-emerald-700">Test Connection</button>
+        </div>
+      </div>
+      <p class="text-xs text-gray-400 mt-2">All requests send <code class="text-yellow-400">X-PSM-Token</code> when provided. Values persist in <code class="text-yellow-400">localStorage</code>.</p>
+    </section>
+
+    <!-- Error Display -->
+    <div id="error" class="hidden mb-4 p-3 terminal-border bg-gray-900 text-red-400 rounded"></div>
+
+    <!-- Server Creation Section -->
+    <div class="bg-gray-900 rounded-xl terminal-border p-6 mb-6">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-2 font-semibold text-purple-400 neon-glow">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M4 4h16v6H4zM4 14h16v6H4z"/></svg>
+          🚀 LAUNCH NEW SERVER
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div>
+          <label class="block text-cyan-400 text-sm mb-2">Server Name</label>
+          <input type="text" id="server-name" placeholder="My Web Server" 
+                 class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
+        </div>
+        <div>
+          <label class="block text-cyan-400 text-sm mb-2">Working Directory</label>
+          <input type="text" id="server-cwd" placeholder="C:\\path\\to\\project" 
+                 class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div>
+          <label class="block text-cyan-400 text-sm mb-2">Port Number</label>
+          <input type="number" id="server-port" placeholder="3000" 
+                 class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
+        </div>
+        <div>
+          <label class="block text-cyan-400 text-sm mb-2">Server Type</label>
+          <select id="server-template" class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
+            <option value="py-http">Python HTTP Server</option>
+            <option value="node-index">Node.js Server</option>
+            <option value="gunicorn-app">Gunicorn App</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-cyan-400 text-sm mb-2">HTML File (Optional)</label>
+          <input type="text" id="server-html" placeholder="index.html" 
+                 class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
+        </div>
+      </div>
+
+      <button id="btn-launch" class="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-cyan-600 text-white font-bold rounded-lg hover:from-purple-700 hover:to-cyan-700 transition-all">
+        🚀 LAUNCH SERVER
+      </button>
+    </div>
+
+    <!-- Main Port Scanner Section -->
+    <div class="bg-gray-900 rounded-xl terminal-border">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-cyan-800">
+        <div class="flex items-center gap-2 font-semibold text-green-400 neon-glow">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M4 4h16v6H4zM4 14h16v6H4z"/></svg>
+          🔍 ACTIVE PORTS & SERVERS
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="btn-scan" class="px-6 py-2 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-lg hover:from-green-700 hover:to-blue-700 transition-all">SCAN PORTS</button>
+          <span id="scan-spinner" class="hidden spin text-cyan-400">🔄</span>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="px-6 py-3 text-sm grid grid-cols-2 md:grid-cols-5 gap-4 border-b border-cyan-800">
+        <div class="text-cyan-400">TCP: <span id="stat-tcp" class="font-semibold text-white">0</span></div>
+        <div class="text-cyan-400">UDP: <span id="stat-udp" class="font-semibold text-white">0</span></div>
+        <div class="text-cyan-400">Total: <span id="stat-total" class="font-semibold text-white">0</span></div>
+        <div class="text-cyan-400">Servers: <span id="stat-servers" class="font-semibold text-white">0</span></div>
+        <div class="text-cyan-400">Updated: <span id="stat-time" class="font-mono text-yellow-400">—</span></div>
+      </div>
+
+      <!-- Empty State -->
+      <div id="empty" class="text-center py-12 hidden">
+        <div class="text-yellow-400 text-5xl mb-2">⚠️</div>
+        <h3 class="text-lg font-medium text-white mb-2">No active ports found</h3>
+        <p class="text-gray-400">Click "SCAN PORTS" to discover active network connections</p>
+      </div>
+
+      <!-- Tables -->
+      <div id="table-wrap" class="overflow-x-auto hidden">
+        <!-- Ports Table -->
+        <div class="border-b border-cyan-800">
+          <h3 class="px-6 py-3 text-orange-400 font-semibold neon-glow">📡 ACTIVE PORTS</h3>
+          <table class="w-full text-sm">
+            <thead class="bg-gray-800 text-cyan-400">
+              <tr>
+                <th class="text-left p-3">Port</th>
+                <th class="text-left p-3">Protocol</th>
+                <th class="text-left p-3">Status</th>
+                <th class="text-left p-3">Service</th>
+                <th class="text-left p-3">Process</th>
+                <th class="text-right p-3">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+
+        <!-- Servers Table -->
+        <div>
+          <h3 class="px-6 py-3 text-purple-400 font-semibold neon-glow">🖥️ LAUNCHED SERVERS</h3>
+          <table class="w-full text-sm">
+            <thead class="bg-gray-800 text-purple-400">
+              <tr>
+                <th class="text-left p-3">Name</th>
+                <th class="text-left p-3">Port</th>
+                <th class="text-left p-3">Type</th>
+                <th class="text-left p-3">PID</th>
+                <th class="text-left p-3">Status</th>
+                <th class="text-right p-3">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="server-rows"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kill Modal -->
+    <div id="modal" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-50">
+      <div class="bg-gray-900 rounded-lg terminal-border w-full max-w-md">
+        <div class="flex justify-between items-center border-b border-cyan-800 p-4">
+          <h3 class="text-lg font-semibold text-red-400 neon-glow">⚠️ CONFIRM TERMINATION</h3>
+          <button id="modal-close" class="p-1 hover:bg-gray-800 rounded text-white">✖</button>
+        </div>
+        <div class="p-4 text-sm">
+          <p class="text-white mb-4">Terminate process using port <strong id="m-port" class="text-yellow-400">—</strong>?</p>
+          <div class="bg-gray-800 p-3 rounded border border-cyan-800 text-white">
+            <div>Service: <span id="m-service" class="font-medium text-cyan-400">—</span></div>
+            <div>Process: <span id="m-proc" class="font-medium text-cyan-400">—</span></div>
+            <div>PID: <span id="m-pid" class="font-mono text-green-400">—</span></div>
+          </div>
+          <div class="bg-yellow-900 border-l-4 border-yellow-500 p-3 mt-3 text-yellow-200">
+            ⚠️ <b>Warning:</b> This may affect running applications. Run as Administrator.
+          </div>
+        </div>
+        <div class="flex justify-end gap-2 p-4 border-t border-cyan-800">
+          <button id="modal-cancel" class="px-4 py-2 rounded border border-gray-600 text-white hover:bg-gray-800">CANCEL</button>
+          <button id="modal-confirm" class="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700">TERMINATE</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="mt-6 text-xs text-center text-gray-500">
+      Port Scanner & Server Manager • Backend: <code class="text-red-400">server.py</code> • Run with Admin privileges for full functionality
+    </div>
+  </div>
+
+  <!-- Single, unified script -->
+  <script>
+    // ------------- Settings-backed API client (no duplicates / no nested <script>) -------------
+    const errBox = document.getElementById("error");
+    function showError(msg){ errBox.textContent = msg; errBox.classList.remove("hidden"); }
+    function clearError(){ errBox.classList.add("hidden"); errBox.textContent = ""; }
+
+    const Settings = {
+      get base(){ return localStorage.getItem('PSM_API_BASE') || 'http://127.0.0.1:5502'; },
+      set base(v){ localStorage.setItem('PSM_API_BASE', v); },
+      get token(){ return localStorage.getItem('PSM_API_TOKEN') || (new URLSearchParams(location.search).get('token') || ''); },
+      set token(v){ localStorage.setItem('PSM_API_TOKEN', v); }
+    };
+
+    async function apiFetch(path, {method='GET', headers={}, body, timeoutMs=10000} = {}) {
+  const base = Settings.base.replace(/\/$/, '');
+  const url = (typeof path === 'string' && path.startsWith('http')) ? path : (base + path);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(new DOMException('timeout','AbortError')), timeoutMs);
+
+  try {
+    // Add mode: 'cors' to handle cross-origin requests
+    const res = await fetch(url, {
+      method,
+      mode: 'cors',  // This is the key fix
+      headers: {
+        'Content-Type': 'application/json',
+        ...(Settings.token ? {'X-PSM-Token': Settings.token} : {}),
+        ...headers
+      },
+      body,
+      signal: controller.signal
+    });
+    
+    const raw = await res.text();
+    let data = raw ? JSON.parse(raw) : {};
+    if (!res.ok || data.ok === false) throw new Error(data.error || `HTTP ${res.status} — ${raw}`);
+    return data;
+  } catch (e) {
+    if (e.name === 'AbortError') throw new Error(`Request timeout after ${Math.round(timeoutMs/1000)}s`);
+    if (e.name === 'TypeError' && e.message === 'Failed to fetch') {
+      throw new Error(`Cannot connect to ${base}. Make sure the backend server is running and CORS is enabled.`);
+    }
+    throw e;
+  } finally { clearTimeout(timeout); }
+}
+
+    // ------------- Wire settings UI -------------
+    const inputBase = document.getElementById('api-base');
+    const inputToken = document.getElementById('api-token');
+    const btnSave = document.getElementById('btn-save-settings');
+    const btnTest = document.getElementById('btn-test');
+
+    inputBase.value = Settings.base;
+    inputToken.value = Settings.token;
+
+    btnSave.onclick = () => {
+      Settings.base = inputBase.value.trim();
+      Settings.token = inputToken.value;
+      clearError();
+      showError(`✅ Saved. Base: ${Settings.base}${Settings.token ? " · Token set" : ""}`);
+      setTimeout(clearError, 2000);
+    };
+
+    btnTest.onclick = async () => {
+      clearError();
+      try {
+        const health = await apiFetch('/health').catch(() => null); // optional
+        // If no /health route, ping something cheap:
+        const info = health || await apiFetch('/api/servers/list').catch(()=>({ok:true, servers:[]}));
+        showError(`✅ Connected to ${Settings.base}`);
+        setTimeout(clearError, 2000);
+      } catch (e) {
+        showError(`❌ Cannot reach ${Settings.base}: ${e.message}`);
+      }
+    };
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key.toLowerCase() === 's' && !['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) {
+        inputBase.focus();
+        inputBase.select();
+        e.preventDefault();
+      }
+    });
+
+    // ------------- DOM elements -------------
+    const btnScan = document.getElementById("btn-scan");
+    const btnLaunch = document.getElementById("btn-launch");
+    const spin = document.getElementById("scan-spinner");
+    const rows = document.getElementById("rows");
+    const serverRows = document.getElementById("server-rows");
+    const empty = document.getElementById("empty");
+    const wrap = document.getElementById("table-wrap");
+
+    const statTCP = document.getElementById("stat-tcp");
+    const statUDP = document.getElementById("stat-udp");
+    const statTotal = document.getElementById("stat-total");
+    const statServers = document.getElementById("stat-servers");
+    const statTime = document.getElementById("stat-time");
+
+    const serverName = document.getElementById("server-name");
+    const serverCwd = document.getElementById("server-cwd");
+    const serverPort = document.getElementById("server-port");
+    const serverTemplate = document.getElementById("server-template");
+    const serverHtml = document.getElementById("server-html");
+
+    const modal = document.getElementById("modal");
+    const mPort = document.getElementById("m-port");
+    const mService = document.getElementById("m-service");
+    const mProc = document.getElementById("m-proc");
+    const mPid = document.getElementById("m-pid");
+    const btnModalCancel = document.getElementById("modal-cancel");
+    const btnModalClose = document.getElementById("modal-close");
+    const btnModalConfirm = document.getElementById("modal-confirm");
+    let modalData = null;
+
+    function badge(status){
+      if(status === "listening") return '<span class="badge badge-green">LISTENING</span>';
+      if(status === "open") return '<span class="badge badge-blue">OPEN</span>';
+      if(status === "running") return '<span class="badge badge-purple">RUNNING</span>';
+      if(status === "stopped") return '<span class="badge badge-orange">STOPPED</span>';
+      return '<span class="badge badge-gray">CLOSED</span>';
+    }
+
+    function render(ports, servers = []){
+      rows.innerHTML = "";
+      serverRows.innerHTML = "";
+      let tcp=0, udp=0;
+
+      if (ports && ports.length > 0) {
+        for (const p of ports) {
+          if(p.protocol === "TCP") tcp++; else if(p.protocol === "UDP") udp++;
+          const proc = p.processName ? `${p.processName}${p.pid ? " (PID "+p.pid+")":""}` : "—";
+          const canKill = !!p.pid && p.pid !== 4;
+          const tr = document.createElement("tr");
+          tr.className = "border-t border-cyan-800 hover:bg-gray-800";
+          tr.innerHTML = `
+            <td class="p-3 font-medium text-yellow-400">${p.port}</td>
+            <td class="p-3 text-cyan-400">${p.protocol}</td>
+            <td class="p-3">${badge(p.status)}</td>
+            <td class="p-3 text-green-400">${p.service || "Unknown"}</td>
+            <td class="p-3 text-white">${proc}</td>
+            <td class="p-3 text-right">
+              <button data-port="${p.port}" data-proto="${p.protocol}" data-pid="${p.pid||""}" data-service="${p.service||""}" data-proc="${p.processName||""}"
+                class="px-3 py-1.5 rounded border border-red-500 text-red-400 hover:bg-red-900 hover:text-white transition-all ${canKill?"":"opacity-40 cursor-not-allowed"}"
+                ${canKill? "":"disabled"}>TERMINATE</button>
+            </td>`;
+          rows.appendChild(tr);
+        }
+
+        rows.querySelectorAll("button[data-pid]").forEach(btn=>{
+          btn.onclick = () => {
+            const pid = Number(btn.dataset.pid||"");
+            modalData = {
+              port: Number(btn.dataset.port),
+              protocol: btn.dataset.proto,
+              pid,
+              service: btn.dataset.service || "Unknown",
+              processName: btn.dataset.proc || "Unknown"
+            };
+            mPort.textContent = `${modalData.port}/${modalData.protocol}`;
+            mService.textContent = modalData.service;
+            mProc.textContent = modalData.processName;
+            mPid.textContent = modalData.pid || "—";
+            modal.classList.remove("hidden");
+          };
+        });
+      }
+
+      if (servers && servers.length > 0) {
+        for (const s of servers) {
+          const tr = document.createElement("tr");
+          tr.className = "border-t border-cyan-800 hover:bg-gray-800";
+          tr.innerHTML = `
+            <td class="p-3 font-medium text-purple-400">${s.name}</td>
+            <td class="p-3 text-yellow-400">${s.port}</td>
+            <td class="p-3 text-cyan-400">${s.template}</td>
+            <td class="p-3 text-green-400">${s.pid}</td>
+            <td class="p-3">${badge('running')}</td>
+            <td class="p-3 text-right">
+              <button data-id="${s.id}" data-pid="${s.pid}"
+                class="px-3 py-1.5 rounded border border-orange-500 text-orange-400 hover:bg-orange-900 hover:text-white transition-all">
+                STOP SERVER
+              </button>
+            </td>`;
+          serverRows.appendChild(tr);
+        }
+
+        serverRows.querySelectorAll("button[data-id]").forEach(btn=>{
+          btn.onclick = async () => {
+            const serverId = btn.dataset.id;
+            const pid = btn.dataset.pid;
+            if(confirm(`Stop server ${pid}?`)) {
+              try {
+                const data = await apiFetch("/api/servers/stop", {
+                  method: "POST",
+                  body: JSON.stringify({ id: serverId })
+                });
+                if(data.ok) await scan();
+              } catch(e) {
+                showError("Stop server error: " + e.message);
+              }
+            }
+          };
+        });
+      }
+
+      statTCP.textContent = tcp;
+      statUDP.textContent = udp;
+      statTotal.textContent = ports ? ports.length : 0;
+      statServers.textContent = servers ? servers.length : 0;
+      statTime.textContent = new Date().toLocaleTimeString();
+
+      empty.classList.toggle("hidden", ports && ports.length !== 0);
+      wrap.classList.toggle("hidden", !ports || ports.length === 0);
+    }
+
+    async function scan(){
+      try{
+        clearError();
+        btnScan.disabled = true; 
+        spin.classList.remove("hidden");
+
+        const portsData = await apiFetch("/api/ports/scan");
+        const serversData = await apiFetch("/api/servers/list").catch(()=>({ok:true, servers:[]}));
+        render(portsData.ports || [], serversData.servers || []);
+
+      } catch(e) {
+        console.error("Scan error:", e);
+        showError("Scan error: " + e.message);
+        empty.classList.remove("hidden");
+        wrap.classList.add("hidden");
+      } finally {
+        btnScan.disabled = false; 
+        spin.classList.add("hidden");
+      }
+    }
+
+    async function launchServer(){
+      try {
+        clearError();
+        const name = serverName.value.trim();
+        const cwd = serverCwd.value.trim();
+        const port = serverPort.value ? parseInt(serverPort.value) : null;
+        const template = serverTemplate.value;
+        const htmlFile = serverHtml.value.trim();
+
+        if(!name) return showError("Server name is required");
+        if(!cwd) return showError("Working directory is required");
+
+        btnLaunch.disabled = true;
+        btnLaunch.textContent = "LAUNCHING...";
+
+        const data = await apiFetch("/api/servers/launch", {
+          method: "POST",
+          body: JSON.stringify({ name, template, port, cwd, htmlFile })
+        });
+
+        if(!data.ok) throw new Error(data.error || "Launch failed");
+
+        // Clear form
+        serverName.value = "";
+        serverCwd.value = "";
+        serverPort.value = "";
+        serverHtml.value = "";
+
+        showError("✅ Server launched successfully!");
+        await scan();
+
+      } catch(e) {
+        showError("Launch error: " + e.message);
+      } finally {
+        btnLaunch.disabled = false;
+        btnLaunch.textContent = "🚀 LAUNCH SERVER";
+      }
+    }
+
+    async function killPID(pid){
+      return apiFetch("/api/ports/kill", {
+        method: "POST",
+        body: JSON.stringify({ pid })
+      });
+    }
+
+    // Event listeners
+    btnScan.onclick = scan;
+    btnLaunch.onclick = launchServer;
+
+    btnModalCancel.onclick = () => { modal.classList.add("hidden"); };
+    btnModalClose.onclick = btnModalCancel.onclick;
+
+    btnModalConfirm.onclick = async () => {
+      if(!modalData?.pid){ btnModalCancel.onclick(); return; }
+      btnModalConfirm.disabled = true; 
+      btnModalConfirm.textContent = "TERMINATING…";
+      try{
+        const data = await killPID(modalData.pid);
+        if(!data.ok) throw new Error(data.error || "Termination failed");
+        await scan();
+      } catch(e) {
+        showError("Termination error: " + e.message);
+      } finally {
+        btnModalConfirm.disabled = false; 
+        btnModalConfirm.textContent = "TERMINATE";
+        btnModalCancel.onclick();
+      }
+    };
+
+    // Default working directory suggestion (non-destructive)
+    try {
+      const parts = window.location.pathname.split('/').slice(0,-1).join('/');
+      serverCwd.value = parts || "C:\\";
+    } catch { serverCwd.value = "C:\\"; }
+
+    // Initial connection test
+(async () => {
+  try {
+    await apiFetch('/health', { timeoutMs: 3000 });
+    showError("✅ Connected! Click 'SCAN PORTS' to start.");
+    setTimeout(clearError, 3000);
+  } catch (e) {
+    showError(`Heads up: cannot reach ${Settings.base}. Make sure the backend server is running and click "Test Connection".`);
+  }
+})();
+  </script>
+</body>
+</html>
