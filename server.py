@@ -23,16 +23,26 @@ class ServerManager:
             if template == "py-http":
                 cmd = [sys.executable, "-m", "http.server", str(port)]
             elif template == "node-index":
-                # Create simple Node.js server
                 server_script = self._create_node_server_script(port)
                 script_path = os.path.join(cwd, "server.js")
                 with open(script_path, 'w') as f:
                     f.write(server_script)
                 cmd = ["node", "server.js"]
+            elif template == "react-dev":
+                cmd = ["npm", "start"]
+            elif template == "express-api":
+                express_script = self._create_express_server_script(port)
+                script_path = os.path.join(cwd, "app.js")
+                with open(script_path, 'w') as f:
+                    f.write(express_script)
+                cmd = ["node", "app.js"]
+            elif template == "php-server":
+                cmd = ["php", "-S", f"localhost:{port}"]
+            elif template == "static-live":
+                cmd = [sys.executable, "-m", "http.server", str(port)]
             else:
                 cmd = [sys.executable, "-m", "http.server", str(port)]
             
-            # Start the process
             process = subprocess.Popen(
                 cmd,
                 cwd=cwd,
@@ -55,7 +65,6 @@ class ServerManager:
             
             self.servers[server_id] = server_info
             
-            # Start monitoring thread
             monitor_thread = threading.Thread(
                 target=self._monitor_server,
                 args=(server_id, process),
@@ -69,51 +78,69 @@ class ServerManager:
             return {"ok": False, "error": f"Failed to launch server: {str(e)}"}
     
     def _create_node_server_script(self, port):
-        """Create a basic Node.js server script"""
-        return f'''
+        return '''
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const server = http.createServer((req, res) => {{
+const server = http.createServer((req, res) => {
     let filePath = '.' + req.url;
     if (filePath === './') filePath = './index.html';
     
     const extname = path.extname(filePath);
     let contentType = 'text/html';
     
-    switch (extname) {{
+    switch (extname) {
         case '.js': contentType = 'text/javascript'; break;
         case '.css': contentType = 'text/css'; break;
         case '.json': contentType = 'application/json'; break;
         case '.png': contentType = 'image/png'; break;
         case '.jpg': contentType = 'image/jpg'; break;
-    }}
+    }
     
-    fs.readFile(filePath, (error, content) => {{
-        if (error) {{
+    fs.readFile(filePath, (error, content) => {
+        if (error) {
             res.writeHead(404);
             res.end('File not found');
-        }} else {{
-            res.writeHead(200, {{ 'Content-Type': contentType }});
+        } else {
+            res.writeHead(200, { 'Content-Type': contentType });
             res.end(content, 'utf-8');
-        }}
-    }});
-}});
+        }
+    });
+});
 
-server.listen({port}, () => {{
-    console.log('Server running at http://localhost:{port}/');
-}});
+server.listen(''' + str(port) + ''', () => {
+    console.log('Server running at http://localhost:' + ''' + str(port) + ''' + '/');
+});
+'''
+    
+    def _create_express_server_script(self, port):
+        return '''
+const express = require('express');
+const app = express();
+const port = ''' + str(port) + ''';
+
+app.use(express.json());
+
+app.get('/', (req, res) => {
+    res.json({ message: 'Express API Server Running!' });
+});
+
+app.get('/api/data', (req, res) => {
+    res.json({ data: [1, 2, 3, 4, 5] });
+});
+
+app.listen(port, () => {
+    console.log('Express server running on port ' + port);
+});
 '''
     
     def _monitor_server(self, server_id, process):
-        """Monitor server process and update status"""
         process.wait()
         if server_id in self.servers:
             self.servers[server_id]["status"] = "stopped"
     
     def stop_server(self, server_id):
-        """Stop a running server"""
         if server_id in self.servers:
             server = self.servers[server_id]
             try:
@@ -127,7 +154,6 @@ server.listen({port}, () => {{
         return {"ok": False, "error": "Server not found"}
     
     def list_servers(self):
-        """Get list of all servers"""
         servers_list = []
         for server_id, server in self.servers.items():
             servers_list.append({
@@ -144,11 +170,9 @@ server.listen({port}, () => {{
 class PortScanner:
     @staticmethod
     def scan_ports():
-        """Scan for active ports and their processes"""
         active_ports = []
         
         try:
-            # Get all network connections
             connections = psutil.net_connections()
             
             for conn in connections:
@@ -162,7 +186,6 @@ class PortScanner:
                         "service": PortScanner._get_service_name(conn.laddr.port, conn.pid)
                     }
                     
-                    # Get process info
                     if conn.pid:
                         try:
                             process = psutil.Process(conn.pid)
@@ -179,49 +202,27 @@ class PortScanner:
     
     @staticmethod
     def _get_service_name(port, pid):
-        """Get better service names based on port and process"""
         service_map = {
-            80: "HTTP Web Server", 
-            443: "HTTPS Web Server", 
-            21: "FTP Server",
-            22: "SSH Server", 
-            23: "Telnet Server",
-            25: "SMTP Email Server", 
-            53: "DNS Server", 
-            110: "POP3 Email",
-            143: "IMAP Email", 
-            993: "IMAPS Secure Email",
-            995: "POP3S Secure Email", 
-            3306: "MySQL Database",
-            5432: "PostgreSQL Database", 
-            27017: "MongoDB Database",
-            6379: "Redis Cache", 
-            9200: "Elasticsearch",
-            3000: "Node.js Development", 
-            5000: "Python Flask Development",
-            8000: "Development Server", 
-            8080: "Web Proxy/Alternative HTTP",
-            8443: "Alternative HTTPS", 
-            5502: "Port Scanner API"
+            80: "HTTP Web Server", 443: "HTTPS Web Server", 21: "FTP Server",
+            22: "SSH Server", 23: "Telnet Server", 25: "SMTP Email Server",
+            53: "DNS Server", 110: "POP3 Email", 143: "IMAP Email", 
+            993: "IMAPS Secure Email", 995: "POP3S Secure Email", 3306: "MySQL Database",
+            5432: "PostgreSQL Database", 27017: "MongoDB Database", 6379: "Redis Cache",
+            9200: "Elasticsearch", 3000: "Node.js Development", 5000: "Python Flask Development",
+            8000: "Development Server", 8080: "Web Proxy/Alternative HTTP",
+            8443: "Alternative HTTPS", 5502: "Port Scanner API"
         }
         
-        # Default names based on common patterns
         default_names = {
-            "python.exe": "Python Application",
-            "node.exe": "Node.js Server", 
-            "java.exe": "Java Application",
-            "nginx.exe": "Nginx Web Server",
-            "apache.exe": "Apache Web Server",
-            "mysql.exe": "MySQL Database",
-            "postgres.exe": "PostgreSQL Database",
-            "steam.exe": "Steam Gaming",
+            "python.exe": "Python Application", "node.exe": "Node.js Server", 
+            "java.exe": "Java Application", "nginx.exe": "Nginx Web Server",
+            "apache.exe": "Apache Web Server", "mysql.exe": "MySQL Database",
+            "postgres.exe": "PostgreSQL Database", "steam.exe": "Steam Gaming",
             "discord.exe": "Discord App"
         }
         
-        # Try to get service name from port first
         service_name = service_map.get(port, "Network Service")
         
-        # If unknown, try to guess from process name
         if service_name == "Network Service" and pid:
             try:
                 process = psutil.Process(pid)
@@ -237,7 +238,6 @@ class PortScanner:
     
     @staticmethod
     def kill_process(pid):
-        """Kill a process by PID"""
         try:
             process = psutil.Process(pid)
             process.terminate()
@@ -257,20 +257,17 @@ class APIHandler(BaseHTTPRequestHandler):
         super().__init__(*args, **kwargs)
     
     def do_OPTIONS(self):
-        """Handle CORS preflight requests"""
         self.send_cors_headers()
         self.send_response(200)
         self.end_headers()
     
     def send_cors_headers(self):
-        """Send CORS headers"""
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type, X-PSM-Token')
         self.send_header('Access-Control-Max-Age', '86400')
     
     def do_GET(self):
-        """Handle GET requests"""
         path = self.path
         
         try:
@@ -286,7 +283,6 @@ class APIHandler(BaseHTTPRequestHandler):
                 self.send_json_response(result)
             
             elif path == '/' or path == '/index.html' or path == '':
-                # Serve the HTML file
                 self.serve_html()
             
             else:
@@ -296,7 +292,6 @@ class APIHandler(BaseHTTPRequestHandler):
             self.send_json_response({"ok": False, "error": str(e)}, 500)
     
     def do_POST(self):
-        """Handle POST requests"""
         path = self.path
         
         try:
@@ -345,7 +340,6 @@ class APIHandler(BaseHTTPRequestHandler):
             self.send_json_response({"ok": False, "error": str(e)}, 500)
     
     def serve_html(self):
-        """Serve the HTML file"""
         try:
             with open('index.html', 'rb') as f:
                 content = f.read()
@@ -358,7 +352,6 @@ class APIHandler(BaseHTTPRequestHandler):
             self.send_error(404, "index.html not found")
     
     def send_json_response(self, data, status=200):
-        """Send JSON response"""
         self.send_response(status)
         self.send_header('Content-Type', 'application/json')
         self.send_header('Access-Control-Allow-Origin', '*')
@@ -366,7 +359,6 @@ class APIHandler(BaseHTTPRequestHandler):
         self.wfile.write(json.dumps(data).encode('utf-8'))
     
     def log_message(self, format, *args):
-        """Suppress default logging"""
         return
 
 def main():

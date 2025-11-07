@@ -25,7 +25,7 @@
     <!-- Header -->
     <header class="mb-6 text-center">
       <h1 class="text-4xl font-bold text-cyan-400 neon-glow mb-2">🚀 PORT SCANNER & SERVER MANAGER</h1>
-      <p class="text-green-400">Scan ports • Kill processes • Launch servers • Full control</p>
+      <p class="text-green-400">Scan ports • Kill processes • Launch servers • Generate .bat files • Full control</p>
     </header>
 
     <!-- Settings -->
@@ -61,6 +61,9 @@
           <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M4 4h16v6H4zM4 14h16v6H4z"/></svg>
           🚀 LAUNCH NEW SERVER
         </div>
+        <button id="btn-generate-bat" class="px-4 py-2 bg-gradient-to-r from-orange-600 to-yellow-600 rounded-lg hover:from-orange-700 hover:to-yellow-700 transition-all">
+          📁 GENERATE .BAT FILE
+        </button>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -87,7 +90,10 @@
           <select id="server-template" class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
             <option value="py-http">Python HTTP Server</option>
             <option value="node-index">Node.js Server</option>
-            <option value="gunicorn-app">Gunicorn App</option>
+            <option value="react-dev">React Development Server</option>
+            <option value="express-api">Express.js API Server</option>
+            <option value="php-server">PHP Development Server</option>
+            <option value="static-live">Static Server with Live Reload</option>
           </select>
         </div>
         <div>
@@ -100,6 +106,51 @@
       <button id="btn-launch" class="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-cyan-600 text-white font-bold rounded-lg hover:from-purple-700 hover:to-cyan-700 transition-all">
         🚀 LAUNCH SERVER
       </button>
+    </div>
+
+    <!-- .bat File Generator Modal -->
+    <div id="bat-modal" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-50">
+      <div class="bg-gray-900 rounded-lg terminal-border w-full max-w-2xl">
+        <div class="flex justify-between items-center border-b border-cyan-800 p-4">
+          <h3 class="text-lg font-semibold text-green-400 neon-glow">📁 GENERATE PROJECT .BAT FILE</h3>
+          <button id="bat-modal-close" class="p-1 hover:bg-gray-800 rounded text-white">✖</button>
+        </div>
+        <div class="p-4 text-sm">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label class="block text-cyan-400 text-sm mb-2">Project Name</label>
+              <input type="text" id="bat-project-name" placeholder="MyAwesomeProject" 
+                     class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
+            </div>
+            <div>
+              <label class="block text-cyan-400 text-sm mb-2">Project Type</label>
+              <select id="bat-project-type" class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
+                <option value="web-static">Static Website</option>
+                <option value="react-app">React Application</option>
+                <option value="node-api">Node.js API</option>
+                <option value="python-app">Python Application</option>
+                <option value="php-site">PHP Website</option>
+              </select>
+            </div>
+          </div>
+          <div class="mb-4">
+            <label class="block text-cyan-400 text-sm mb-2">Project Directory</label>
+            <input type="text" id="bat-project-dir" placeholder="C:\\Projects\\MyProject" 
+                   class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
+          </div>
+          <div class="bg-gray-800 p-3 rounded border border-cyan-800 text-white mb-4">
+            <div class="text-green-400 font-semibold mb-2">Generated .bat will include:</div>
+            <div>• Auto server startup</div>
+            <div>• Browser launch</div>
+            <div>• Project structure creation</div>
+            <div>• Package.json/requirements.txt</div>
+          </div>
+        </div>
+        <div class="flex justify-end gap-2 p-4 border-t border-cyan-800">
+          <button id="bat-modal-cancel" class="px-4 py-2 rounded border border-gray-600 text-white hover:bg-gray-800">CANCEL</button>
+          <button id="bat-modal-generate" class="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700">GENERATE .BAT FILE</button>
+        </div>
+      </div>
     </div>
 
     <!-- Main Port Scanner Section -->
@@ -204,7 +255,7 @@
 
   <!-- Single, unified script -->
   <script>
-    // ------------- Settings-backed API client (no duplicates / no nested <script>) -------------
+    // ------------- Settings-backed API client -------------
     const errBox = document.getElementById("error");
     function showError(msg){ errBox.textContent = msg; errBox.classList.remove("hidden"); }
     function clearError(){ errBox.classList.add("hidden"); errBox.textContent = ""; }
@@ -217,37 +268,35 @@
     };
 
     async function apiFetch(path, {method='GET', headers={}, body, timeoutMs=10000} = {}) {
-  const base = Settings.base.replace(/\/$/, '');
-  const url = (typeof path === 'string' && path.startsWith('http')) ? path : (base + path);
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(new DOMException('timeout','AbortError')), timeoutMs);
+      const base = Settings.base.replace(/\/$/, '');
+      const url = (typeof path === 'string' && path.startsWith('http')) ? path : (base + path);
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(new DOMException('timeout','AbortError')), timeoutMs);
 
-  try {
-    // Add mode: 'cors' to handle cross-origin requests
-    const res = await fetch(url, {
-      method,
-      mode: 'cors',  // This is the key fix
-      headers: {
-        'Content-Type': 'application/json',
-        ...(Settings.token ? {'X-PSM-Token': Settings.token} : {}),
-        ...headers
-      },
-      body,
-      signal: controller.signal
-    });
-    
-    const raw = await res.text();
-    let data = raw ? JSON.parse(raw) : {};
-    if (!res.ok || data.ok === false) throw new Error(data.error || `HTTP ${res.status} — ${raw}`);
-    return data;
-  } catch (e) {
-    if (e.name === 'AbortError') throw new Error(`Request timeout after ${Math.round(timeoutMs/1000)}s`);
-    if (e.name === 'TypeError' && e.message === 'Failed to fetch') {
-      throw new Error(`Cannot connect to ${base}. Make sure the backend server is running and CORS is enabled.`);
+      try {
+        const res = await fetch(url, {
+          method,
+          mode: 'cors',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(Settings.token ? {'X-PSM-Token': Settings.token} : {}),
+            ...headers
+          },
+          body,
+          signal: controller.signal
+        });
+        const raw = await res.text();
+        let data = raw ? JSON.parse(raw) : {};
+        if (!res.ok || data.ok === false) throw new Error(data.error || `HTTP ${res.status} — ${raw}`);
+        return data;
+      } catch (e) {
+        if (e.name === 'AbortError') throw new Error(`Request timeout after ${Math.round(timeoutMs/1000)}s`);
+        if (e.name === 'TypeError' && e.message === 'Failed to fetch') {
+          throw new Error(`Cannot connect to ${base}. Make sure the backend server is running.`);
+        }
+        throw e;
+      } finally { clearTimeout(timeout); }
     }
-    throw e;
-  } finally { clearTimeout(timeout); }
-}
 
     // ------------- Wire settings UI -------------
     const inputBase = document.getElementById('api-base');
@@ -269,9 +318,7 @@
     btnTest.onclick = async () => {
       clearError();
       try {
-        const health = await apiFetch('/health').catch(() => null); // optional
-        // If no /health route, ping something cheap:
-        const info = health || await apiFetch('/api/servers/list').catch(()=>({ok:true, servers:[]}));
+        const health = await apiFetch('/health');
         showError(`✅ Connected to ${Settings.base}`);
         setTimeout(clearError, 2000);
       } catch (e) {
@@ -290,6 +337,7 @@
     // ------------- DOM elements -------------
     const btnScan = document.getElementById("btn-scan");
     const btnLaunch = document.getElementById("btn-launch");
+    const btnGenerateBat = document.getElementById("btn-generate-bat");
     const spin = document.getElementById("scan-spinner");
     const rows = document.getElementById("rows");
     const serverRows = document.getElementById("server-rows");
@@ -308,14 +356,27 @@
     const serverTemplate = document.getElementById("server-template");
     const serverHtml = document.getElementById("server-html");
 
+    // Modals
     const modal = document.getElementById("modal");
+    const batModal = document.getElementById("bat-modal");
     const mPort = document.getElementById("m-port");
     const mService = document.getElementById("m-service");
     const mProc = document.getElementById("m-proc");
     const mPid = document.getElementById("m-pid");
+    
+    // Buttons
     const btnModalCancel = document.getElementById("modal-cancel");
     const btnModalClose = document.getElementById("modal-close");
     const btnModalConfirm = document.getElementById("modal-confirm");
+    
+    // .bat modal elements
+    const batModalClose = document.getElementById("bat-modal-close");
+    const batModalCancel = document.getElementById("bat-modal-cancel");
+    const batModalGenerate = document.getElementById("bat-modal-generate");
+    const batProjectName = document.getElementById("bat-project-name");
+    const batProjectType = document.getElementById("bat-project-type");
+    const batProjectDir = document.getElementById("bat-project-dir");
+
     let modalData = null;
 
     function badge(status){
@@ -479,6 +540,99 @@
       }
     }
 
+    function generateBatchFile() {
+      const projectName = batProjectName.value.trim() || "MyProject";
+      const projectType = batProjectType.value;
+      const projectDir = batProjectDir.value.trim() || `C:\\Projects\\${projectName}`;
+
+      let batContent = `@echo off\n`;
+      batContent += `echo Starting ${projectName}...\n`;
+      batContent += `echo.\n\n`;
+      
+      batContent += `REM Create project directory\n`;
+      batContent += `if not exist "${projectDir}" mkdir "${projectDir}"\n`;
+      batContent += `cd /d "${projectDir}"\n\n`;
+      
+      // Different setups based on project type
+      switch(projectType) {
+        case 'web-static':
+          batContent += `REM Create basic HTML structure\n`;
+          batContent += `echo ^<!DOCTYPE html^> > index.html\n`;
+          batContent += `echo ^<html^>^<head^>^<title^>${projectName}^</title^>^</head^> >> index.html\n`;
+          batContent += `echo ^<body^>^<h1^>Welcome to ${projectName}^</h1^>^</body^>^</html^> >> index.html\n\n`;
+          batContent += `REM Start Python HTTP server\n`;
+          batContent += `start "Web Server" python -m http.server 8000\n`;
+          break;
+          
+        case 'react-app':
+          batContent += `REM React.js project setup\n`;
+          batContent += `echo Creating React app...\n`;
+          batContent += `npx create-react-app . || echo "React CLI not found, creating manual structure"\n`;
+          batContent += `npm start\n`;
+          break;
+          
+        case 'node-api':
+          batContent += `REM Node.js API setup\n`;
+          batContent += `echo Creating package.json...\n`;
+          batContent += `echo { > package.json\n`;
+          batContent += `echo   "name": "${projectName.toLowerCase()}", >> package.json\n`;
+          batContent += `echo   "version": "1.0.0", >> package.json\n`;
+          batContent += `echo   "main": "server.js", >> package.json\n`;
+          batContent += `echo   "scripts": { "start": "node server.js" } >> package.json\n`;
+          batContent += `echo } >> package.json\n\n`;
+          batContent += `REM Create basic server\n`;
+          batContent += `echo const http = require('http'); > server.js\n`;
+          batContent += `echo const server = http.createServer((req, res) => { >> server.js\n`;
+          batContent += `echo   res.writeHead(200, {'Content-Type': 'application/json'}); >> server.js\n`;
+          batContent += `echo   res.end('{"message":"Hello from ${projectName}"}'); >> server.js\n`;
+          batContent += `echo }); >> server.js\n`;
+          batContent += `echo server.listen(3000, () => console.log('Server running on port 3000')); >> server.js\n\n`;
+          batContent += `npm start\n`;
+          break;
+          
+        case 'python-app':
+          batContent += `REM Python project setup\n`;
+          batContent += `echo Creating requirements.txt...\n`;
+          batContent += `echo flask > requirements.txt\n`;
+          batContent += `echo. > app.py\n`;
+          batContent += `pip install -r requirements.txt\n`;
+          batContent += `python app.py\n`;
+          break;
+          
+        case 'php-site':
+          batContent += `REM PHP project setup\n`;
+          batContent += `echo ^<!DOCTYPE html^> > index.php\n`;
+          batContent += `echo ^<html^>^<head^>^<title^>${projectName}^</title^>^</head^> >> index.php\n`;
+          batContent += `echo ^<body^>^<h1^>^<?php echo "Welcome to ${projectName}"; ?^>^</h1^>^</body^>^</html^> >> index.php\n\n`;
+          batContent += `REM Start PHP development server\n`;
+          batContent += `php -S localhost:8000\n`;
+          break;
+      }
+      
+      batContent += `\necho.\n`;
+      batContent += `echo Project ${projectName} is starting...\n`;
+      batContent += `echo Opening browser...\n`;
+      batContent += `timeout /t 3 /nobreak >nul\n`;
+      batContent += `start http://localhost:8000\n`;
+      batContent += `echo.\n`;
+      batContent += `echo ✅ ${projectName} is ready!\n`;
+      batContent += `pause\n`;
+
+      // Create download
+      const blob = new Blob([batContent], { type: 'application/bat' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `start-${projectName.toLowerCase()}.bat`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      showError(`✅ Generated start-${projectName.toLowerCase()}.bat file!`);
+      batModal.classList.add("hidden");
+    }
+
     async function killPID(pid){
       return apiFetch("/api/ports/kill", {
         method: "POST",
@@ -489,9 +643,18 @@
     // Event listeners
     btnScan.onclick = scan;
     btnLaunch.onclick = launchServer;
+    btnGenerateBat.onclick = () => {
+      batProjectName.value = "MyProject";
+      batProjectDir.value = serverCwd.value || "C:\\Projects\\MyProject";
+      batModal.classList.remove("hidden");
+    };
 
+    // Modal handlers
     btnModalCancel.onclick = () => { modal.classList.add("hidden"); };
     btnModalClose.onclick = btnModalCancel.onclick;
+    batModalClose.onclick = () => { batModal.classList.add("hidden"); };
+    batModalCancel.onclick = () => { batModal.classList.add("hidden"); };
+    batModalGenerate.onclick = generateBatchFile;
 
     btnModalConfirm.onclick = async () => {
       if(!modalData?.pid){ btnModalCancel.onclick(); return; }
@@ -510,22 +673,26 @@
       }
     };
 
-    // Default working directory suggestion (non-destructive)
+    // Default working directory suggestion
     try {
       const parts = window.location.pathname.split('/').slice(0,-1).join('/');
       serverCwd.value = parts || "C:\\";
-    } catch { serverCwd.value = "C:\\"; }
+      batProjectDir.value = parts || "C:\\Projects\\MyProject";
+    } catch { 
+      serverCwd.value = "C:\\";
+      batProjectDir.value = "C:\\Projects\\MyProject";
+    }
 
     // Initial connection test
-(async () => {
-  try {
-    await apiFetch('/health', { timeoutMs: 3000 });
-    showError("✅ Connected! Click 'SCAN PORTS' to start.");
-    setTimeout(clearError, 3000);
-  } catch (e) {
-    showError(`Heads up: cannot reach ${Settings.base}. Make sure the backend server is running and click "Test Connection".`);
-  }
-})();
+    (async () => {
+      try {
+        await apiFetch('/health', { timeoutMs: 3000 });
+        showError("✅ Connected! Click 'SCAN PORTS' to start.");
+        setTimeout(clearError, 3000);
+      } catch (e) {
+        showError(`Heads up: cannot reach ${Settings.base}. Make sure the backend server is running and click "Test Connection".`);
+      }
+    })();
   </script>
 </body>
 </html>
