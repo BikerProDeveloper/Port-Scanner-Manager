@@ -416,7 +416,7 @@
     const downloadFilename = document.getElementById('download-filename');
     const btnCloseSuccess = document.getElementById('btn-close-success');
 
-    // Batch file templates for different project types
+    // FIXED Batch file templates - servers stay running!
     const batchTemplates = {
       static: (name, dir, port, htmlFile) => `@echo off
 chcp 65001 >nul
@@ -467,17 +467,14 @@ echo Project structure created!
 echo Starting web server on port ${port}...
 timeout /t 2 /nobreak >nul
 
-REM Start Python HTTP server
-start "Web Server" python -m http.server ${port}
-
-echo Opening browser...
-timeout /t 3 /nobreak >nul
-start "" "http://localhost:${port}"
+REM Start Python HTTP server and KEEP IT RUNNING
+echo Starting server process...
+python -m http.server ${port}
 
 echo.
-echo ✅ ${name} is ready and running!
-echo 📍 http://localhost:${port}
-echo.
+echo ⚠️  Server is running in the background
+echo 📍 Your app: http://localhost:${port}
+echo 🛑 Close this window to stop the server
 pause`,
 
       node: (name, dir, port, htmlFile) => `@echo off
@@ -550,16 +547,14 @@ echo.
 echo Starting Node.js server...
 timeout /t 2 /nobreak >nul
 
-start "Node Server" node server.js
-
-echo Opening browser...
-timeout /t 3 /nobreak >nul
-start "" "http://localhost:${port}"
+REM Start Node server and KEEP IT RUNNING
+echo Starting server process...
+node server.js
 
 echo.
-echo ✅ ${name} Node.js app is ready!
-echo 📍 http://localhost:${port}
-echo.
+echo ⚠️  Server is running in the background
+echo 📍 Your app: http://localhost:${port}
+echo 🛑 Close this window to stop the server
 pause`,
 
       python: (name, dir, port, htmlFile) => `@echo off
@@ -616,16 +611,14 @@ echo.
 echo Starting Flask server...
 timeout /t 2 /nobreak >nul
 
-start "Flask Server" python app.py
-
-echo Opening browser...
-timeout /t 3 /nobreak >nul
-start "" "http://localhost:${port}"
+REM Start Flask server and KEEP IT RUNNING
+echo Starting server process...
+python app.py
 
 echo.
-echo ✅ ${name} Flask app is ready!
-echo 📍 http://localhost:${port}
-echo.
+echo ⚠️  Server is running in the background
+echo 📍 Your app: http://localhost:${port}
+echo 🛑 Close this window to stop the server
 pause`,
 
       php: (name, dir, port, htmlFile) => `@echo off
@@ -662,16 +655,14 @@ echo.
 echo Starting PHP built-in server...
 timeout /t 2 /nobreak >nul
 
-start "PHP Server" php -S localhost:${port}
-
-echo Opening browser...
-timeout /t 3 /nobreak >nul
-start "" "http://localhost:${port}"
+REM Start PHP server and KEEP IT RUNNING
+echo Starting server process...
+php -S localhost:${port}
 
 echo.
-echo ✅ ${name} PHP website is ready!
-echo 📍 http://localhost:${port}
-echo.
+echo ⚠️  Server is running in the background
+echo 📍 Your app: http://localhost:${port}
+echo 🛑 Close this window to stop the server
 pause`
     };
 
