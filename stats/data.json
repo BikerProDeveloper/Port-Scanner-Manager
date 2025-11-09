@@ -1,0 +1,20 @@
+{
+  "total_bats_created": 0,
+  "today_bats": 0,
+  "today_date": "2024-01-15",
+  "project_types": {
+    "static": 0,
+    "node": 0,
+    "python": 0,
+    "php": 0
+  },
+  "weekly_stats": {
+    "current_week": 0,
+    "last_week": 0
+  },
+  "milestones": [
+    {"count": 100, "badge": "🚀 Primeros 100", "achieved": false},
+    {"count": 500, "badge": "🔥 500 .bats", "achieved": false},
+    {"count": 1000, "badge": "🎯 1K Proyectos", "achieved": false}
+  ]
+}
