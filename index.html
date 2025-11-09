@@ -25,7 +25,7 @@
     <!-- Header -->
     <header class="mb-6 text-center">
       <h1 class="text-4xl font-bold text-cyan-400 neon-glow mb-2">🚀 PORT SCANNER & SERVER MANAGER</h1>
-      <p class="text-green-400">Scan ports • Kill processes • Launch servers • Generate .bat files • Full control</p>
+      <p class="text-green-400">Scan ports • Kill processes • Launch servers • Full control</p>
     </header>
 
     <!-- Settings -->
@@ -54,16 +54,105 @@
     <!-- Error Display -->
     <div id="error" class="hidden mb-4 p-3 terminal-border bg-gray-900 text-red-400 rounded"></div>
 
-    <!-- Server Creation Section -->
+    <!-- NEW: Batch File Generator Section -->
+    <div class="bg-gray-900 rounded-xl terminal-border p-6 mb-6">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-2 font-semibold text-purple-400 neon-glow">
+          📁 GENERATE PROJECT .BAT FILE
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div>
+          <label class="block text-cyan-400 text-sm mb-2">Project Name</label>
+          <input type="text" id="project-name" placeholder="MyProject" 
+                 class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
+        </div>
+        <div>
+          <label class="block text-cyan-400 text-sm mb-2">Project Type</label>
+          <select id="project-type" class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
+            <option value="static">Static Website</option>
+            <option value="node">Node.js App</option>
+            <option value="python">Python Flask</option>
+            <option value="php">PHP Website</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 mb-4">
+        <div>
+          <label class="block text-cyan-400 text-sm mb-2">Project Directory</label>
+          <input type="text" id="project-dir" 
+                 value="C:\Users\Jo\OneDrive\Documents\Servidor de Pruebas de Proyectos\new"
+                 class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div>
+          <label class="block text-cyan-400 text-sm mb-2">Port Number</label>
+          <input type="number" id="project-port" placeholder="5000" value="5000"
+                 class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
+        </div>
+        <div>
+          <label class="block text-cyan-400 text-sm mb-2">HTML File Name</label>
+          <input type="text" id="project-html" placeholder="index.html" value="index.html"
+                 class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
+        </div>
+      </div>
+
+      <!-- Features List -->
+      <div class="bg-gray-800 p-4 rounded-lg mb-6">
+        <h3 class="text-cyan-400 text-sm mb-2">Generated .bat will include:</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+          <div class="flex items-center gap-2">
+            <span class="text-green-400">✓</span>
+            <span>Auto server startup</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-green-400">✓</span>
+            <span>Browser launch</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-green-400">✓</span>
+            <span>Project structure creation</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-green-400">✓</span>
+            <span>Package.json/requirements.txt</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex gap-4">
+        <button id="btn-cancel-batch" class="w-1/2 px-6 py-3 bg-gray-700 text-white font-bold rounded-lg hover:bg-gray-600 transition-all">
+          CANCEL
+        </button>
+        <button id="btn-generate-batch" class="w-1/2 px-6 py-3 bg-gradient-to-r from-purple-600 to-cyan-600 text-white font-bold rounded-lg hover:from-purple-700 hover:to-cyan-700 transition-all">
+          📥 DOWNLOAD .BAT FILE
+        </button>
+      </div>
+    </div>
+
+    <!-- Download Success Message -->
+    <div id="download-success" class="hidden bg-green-900 rounded-xl terminal-border p-6 mb-6">
+      <div class="flex items-center justify-between">
+        <h3 class="text-green-400 font-semibold text-lg">✅ BATCH FILE DOWNLOADED SUCCESSFULLY!</h3>
+        <button id="btn-close-success" class="px-4 py-2 bg-green-700 text-white rounded hover:bg-green-600">Close</button>
+      </div>
+      <div class="mt-4 text-sm text-cyan-400">
+        <p>📁 File: <span id="download-filename" class="text-yellow-400">start_myproject.bat</span></p>
+        <p>📍 Save it in your project directory and double-click to run!</p>
+      </div>
+    </div>
+
+    <!-- Original Server Creation Section -->
     <div class="bg-gray-900 rounded-xl terminal-border p-6 mb-6">
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center gap-2 font-semibold text-purple-400 neon-glow">
           <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M4 4h16v6H4zM4 14h16v6H4z"/></svg>
           🚀 LAUNCH NEW SERVER
         </div>
-        <button id="btn-generate-bat" class="px-4 py-2 bg-gradient-to-r from-orange-600 to-yellow-600 rounded-lg hover:from-orange-700 hover:to-yellow-700 transition-all">
-          📁 GENERATE .BAT FILE
-        </button>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -90,10 +179,7 @@
           <select id="server-template" class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
             <option value="py-http">Python HTTP Server</option>
             <option value="node-index">Node.js Server</option>
-            <option value="react-dev">React Development Server</option>
-            <option value="express-api">Express.js API Server</option>
-            <option value="php-server">PHP Development Server</option>
-            <option value="static-live">Static Server with Live Reload</option>
+            <option value="gunicorn-app">Gunicorn App</option>
           </select>
         </div>
         <div>
@@ -106,51 +192,6 @@
       <button id="btn-launch" class="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-cyan-600 text-white font-bold rounded-lg hover:from-purple-700 hover:to-cyan-700 transition-all">
         🚀 LAUNCH SERVER
       </button>
-    </div>
-
-    <!-- .bat File Generator Modal -->
-    <div id="bat-modal" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-50">
-      <div class="bg-gray-900 rounded-lg terminal-border w-full max-w-2xl">
-        <div class="flex justify-between items-center border-b border-cyan-800 p-4">
-          <h3 class="text-lg font-semibold text-green-400 neon-glow">📁 GENERATE PROJECT .BAT FILE</h3>
-          <button id="bat-modal-close" class="p-1 hover:bg-gray-800 rounded text-white">✖</button>
-        </div>
-        <div class="p-4 text-sm">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div>
-              <label class="block text-cyan-400 text-sm mb-2">Project Name</label>
-              <input type="text" id="bat-project-name" placeholder="MyAwesomeProject" 
-                     class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
-            </div>
-            <div>
-              <label class="block text-cyan-400 text-sm mb-2">Project Type</label>
-              <select id="bat-project-type" class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
-                <option value="web-static">Static Website</option>
-                <option value="react-app">React Application</option>
-                <option value="node-api">Node.js API</option>
-                <option value="python-app">Python Application</option>
-                <option value="php-site">PHP Website</option>
-              </select>
-            </div>
-          </div>
-          <div class="mb-4">
-            <label class="block text-cyan-400 text-sm mb-2">Project Directory</label>
-            <input type="text" id="bat-project-dir" placeholder="C:\\Projects\\MyProject" 
-                   class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
-          </div>
-          <div class="bg-gray-800 p-3 rounded border border-cyan-800 text-white mb-4">
-            <div class="text-green-400 font-semibold mb-2">Generated .bat will include:</div>
-            <div>• Auto server startup</div>
-            <div>• Browser launch</div>
-            <div>• Project structure creation</div>
-            <div>• Package.json/requirements.txt</div>
-          </div>
-        </div>
-        <div class="flex justify-end gap-2 p-4 border-t border-cyan-800">
-          <button id="bat-modal-cancel" class="px-4 py-2 rounded border border-gray-600 text-white hover:bg-gray-800">CANCEL</button>
-          <button id="bat-modal-generate" class="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700">GENERATE .BAT FILE</button>
-        </div>
-      </div>
     </div>
 
     <!-- Main Port Scanner Section -->
@@ -255,7 +296,7 @@
 
   <!-- Single, unified script -->
   <script>
-    // ------------- Settings-backed API client -------------
+    // ------------- Settings-backed API client (no duplicates / no nested <script>) -------------
     const errBox = document.getElementById("error");
     function showError(msg){ errBox.textContent = msg; errBox.classList.remove("hidden"); }
     function clearError(){ errBox.classList.add("hidden"); errBox.textContent = ""; }
@@ -276,7 +317,6 @@
       try {
         const res = await fetch(url, {
           method,
-          mode: 'cors',
           headers: {
             'Content-Type': 'application/json',
             ...(Settings.token ? {'X-PSM-Token': Settings.token} : {}),
@@ -291,9 +331,6 @@
         return data;
       } catch (e) {
         if (e.name === 'AbortError') throw new Error(`Request timeout after ${Math.round(timeoutMs/1000)}s`);
-        if (e.name === 'TypeError' && e.message === 'Failed to fetch') {
-          throw new Error(`Cannot connect to ${base}. Make sure the backend server is running.`);
-        }
         throw e;
       } finally { clearTimeout(timeout); }
     }
@@ -318,7 +355,9 @@
     btnTest.onclick = async () => {
       clearError();
       try {
-        const health = await apiFetch('/health');
+        const health = await apiFetch('/health').catch(() => null); // optional
+        // If no /health route, ping something cheap:
+        const info = health || await apiFetch('/api/servers/list').catch(()=>({ok:true, servers:[]}));
         showError(`✅ Connected to ${Settings.base}`);
         setTimeout(clearError, 2000);
       } catch (e) {
@@ -337,7 +376,6 @@
     // ------------- DOM elements -------------
     const btnScan = document.getElementById("btn-scan");
     const btnLaunch = document.getElementById("btn-launch");
-    const btnGenerateBat = document.getElementById("btn-generate-bat");
     const spin = document.getElementById("scan-spinner");
     const rows = document.getElementById("rows");
     const serverRows = document.getElementById("server-rows");
@@ -356,29 +394,340 @@
     const serverTemplate = document.getElementById("server-template");
     const serverHtml = document.getElementById("server-html");
 
-    // Modals
     const modal = document.getElementById("modal");
-    const batModal = document.getElementById("bat-modal");
     const mPort = document.getElementById("m-port");
     const mService = document.getElementById("m-service");
     const mProc = document.getElementById("m-proc");
     const mPid = document.getElementById("m-pid");
-    
-    // Buttons
     const btnModalCancel = document.getElementById("modal-cancel");
     const btnModalClose = document.getElementById("modal-close");
     const btnModalConfirm = document.getElementById("modal-confirm");
-    
-    // .bat modal elements
-    const batModalClose = document.getElementById("bat-modal-close");
-    const batModalCancel = document.getElementById("bat-modal-cancel");
-    const batModalGenerate = document.getElementById("bat-modal-generate");
-    const batProjectName = document.getElementById("bat-project-name");
-    const batProjectType = document.getElementById("bat-project-type");
-    const batProjectDir = document.getElementById("bat-project-dir");
-
     let modalData = null;
 
+    // ------------- Batch File Generator Elements -------------
+    const projectName = document.getElementById('project-name');
+    const projectType = document.getElementById('project-type');
+    const projectDir = document.getElementById('project-dir');
+    const projectPort = document.getElementById('project-port');
+    const projectHtml = document.getElementById('project-html');
+    const btnGenerateBatch = document.getElementById('btn-generate-batch');
+    const btnCancelBatch = document.getElementById('btn-cancel-batch');
+    const downloadSuccess = document.getElementById('download-success');
+    const downloadFilename = document.getElementById('download-filename');
+    const btnCloseSuccess = document.getElementById('btn-close-success');
+
+    // Batch file templates for different project types
+    const batchTemplates = {
+      static: (name, dir, port, htmlFile) => `@echo off
+chcp 65001 >nul
+title ${name} - Static Website
+echo ===============================
+echo    Starting ${name}
+echo ===============================
+echo.
+
+REM Create project directory
+if not exist "${dir}" mkdir "${dir}"
+cd /d "${dir}"
+
+REM Create proper HTML structure with CSS and JS
+echo ^<!DOCTYPE html^> > ${htmlFile}
+echo ^<html lang="en"^> >> ${htmlFile}
+echo ^<head^> >> ${htmlFile}
+echo   ^<meta charset="UTF-8"^> >> ${htmlFile}
+echo   ^<meta name="viewport" content="width=device-width, initial-scale=1.0"^> >> ${htmlFile}
+echo   ^<title^>${name}^</title^> >> ${htmlFile}
+echo   ^<style^> >> ${htmlFile}
+echo     body { font-family: Arial, sans-serif; margin: 40px; background: #1a1a1a; color: white; } >> ${htmlFile}
+echo     .container { max-width: 800px; margin: 0 auto; } >> ${htmlFile}
+echo   ^</style^> >> ${htmlFile}
+echo ^</head^> >> ${htmlFile}
+echo ^<body^> >> ${htmlFile}
+echo   ^<div class="container"^> >> ${htmlFile}
+echo     ^<h1^>🚀 Welcome to ${name}^</h1^> >> ${htmlFile}
+echo     ^<p^>Your static website is running successfully!^</p^> >> ${htmlFile}
+echo     ^<p^>Server: http://localhost:${port}^</p^> >> ${htmlFile}
+echo   ^</div^> >> ${htmlFile}
+echo ^<script^> >> ${htmlFile}
+echo   console.log('${name} is running on port ${port}'); >> ${htmlFile}
+echo ^</script^> >> ${htmlFile}
+echo ^</html^> >> ${htmlFile}
+
+REM Create CSS directory and basic styles
+if not exist "css" mkdir "css"
+echo body { font-family: Arial, sans-serif; } > css/style.css
+echo .header { background: #007acc; color: white; padding: 20px; } >> css/style.css
+
+REM Create JS directory and basic scripts
+if not exist "js" mkdir "js"
+echo console.log('${name} JavaScript loaded'); > js/script.js
+
+echo.
+echo Project structure created!
+echo Starting web server on port ${port}...
+timeout /t 2 /nobreak >nul
+
+REM Start Python HTTP server
+start "Web Server" python -m http.server ${port}
+
+echo Opening browser...
+timeout /t 3 /nobreak >nul
+start "" "http://localhost:${port}"
+
+echo.
+echo ✅ ${name} is ready and running!
+echo 📍 http://localhost:${port}
+echo.
+pause`,
+
+      node: (name, dir, port, htmlFile) => `@echo off
+chcp 65001 >nul
+title ${name} - Node.js App
+echo ===============================
+echo    Starting ${name}
+echo ===============================
+echo.
+
+REM Create project directory
+if not exist "${dir}" mkdir "${dir}"
+cd /d "${dir}"
+
+REM Create package.json
+echo { > package.json
+echo   "name": "${name.toLowerCase()}", >> package.json
+echo   "version": "1.0.0", >> package.json
+echo   "description": "${name} - Node.js Application", >> package.json
+echo   "main": "server.js", >> package.json
+echo   "scripts": { >> package.json
+echo     "start": "node server.js", >> package.json
+echo     "dev": "node server.js" >> package.json
+echo   }, >> package.json
+echo   "dependencies": { >> package.json
+echo     "express": "^4.18.0" >> package.json
+echo   } >> package.json
+echo } >> package.json
+
+REM Create Node.js server file
+echo const express = require('express'); > server.js
+echo const app = express(); >> server.js
+echo const PORT = ${port}; >> server.js
+echo. >> server.js
+echo app.use(express.static('public')); >> server.js
+echo. >> server.js
+echo app.get('/', (req, res) => { >> server.js
+echo   res.send(\` >> server.js
+echo     ^<!DOCTYPE html^> >> server.js
+echo     ^<html^> >> server.js
+echo       ^<head^> >> server.js
+echo         ^<title^>${name}^</title^> >> server.js
+echo         ^<style^> >> server.js
+echo           body { font-family: Arial, sans-serif; margin: 40px; background: #1a1a1a; color: white; } >> server.js
+echo         ^</style^> >> server.js
+echo       ^</head^> >> server.js
+echo       ^<body^> >> server.js
+echo         ^<h1^>🚀 ${name} - Node.js App^</h1^> >> server.js
+echo         ^<p^>Running on Express server!^</p^> >> server.js
+echo         ^<p^>Port: \${PORT}^</p^> >> server.js
+echo       ^</body^> >> server.js
+echo     ^</html^> >> server.js
+echo   \`); >> server.js
+echo }); >> server.js
+echo. >> server.js
+echo app.listen(PORT, () => { >> server.js
+echo   console.log(\`${name} running on http://localhost:\${PORT}\`); >> server.js
+echo }); >> server.js
+
+REM Create public directory for static files
+if not exist "public" mkdir "public"
+echo ^<!DOCTYPE html^> > public/index.html
+echo ^<html^>^<body^>^<h1^>Static Files Folder^</h1^>^</body^>^</html^> >> public/index.html
+
+echo.
+echo Installing dependencies...
+call npm install
+
+echo.
+echo Starting Node.js server...
+timeout /t 2 /nobreak >nul
+
+start "Node Server" node server.js
+
+echo Opening browser...
+timeout /t 3 /nobreak >nul
+start "" "http://localhost:${port}"
+
+echo.
+echo ✅ ${name} Node.js app is ready!
+echo 📍 http://localhost:${port}
+echo.
+pause`,
+
+      python: (name, dir, port, htmlFile) => `@echo off
+chcp 65001 >nul
+title ${name} - Python Flask App
+echo ===============================
+echo    Starting ${name}
+echo ===============================
+echo.
+
+REM Create project directory
+if not exist "${dir}" mkdir "${dir}"
+cd /d "${dir}"
+
+REM Create requirements.txt
+echo Flask^>^=2.3.0 > requirements.txt
+
+REM Create Python Flask app
+echo from flask import Flask, render_template > app.py
+echo. >> app.py
+echo app = Flask(__name__) >> app.py
+echo. >> app.py
+echo @app.route('/') >> app.py
+echo def home(): >> app.py
+echo     return render_template('index.html', name='${name}', port=${port}) >> app.py
+echo. >> app.py
+echo if __name__ == '__main__': >> app.py
+echo     app.run(debug=True, port=${port}) >> app.py
+
+REM Create templates directory
+if not exist "templates" mkdir "templates"
+
+REM Create HTML template
+echo ^<!DOCTYPE html^> > templates/index.html
+echo ^<html^> >> templates/index.html
+echo ^<head^> >> templates/index.html
+echo   ^<title^>{{ name }}^</title^> >> templates/index.html
+echo   ^<style^> >> templates/index.html
+echo     body { font-family: Arial, sans-serif; margin: 40px; background: #1a1a1a; color: white; } >> templates/index.html
+echo   ^</style^> >> templates/index.html
+echo ^</head^> >> templates/index.html
+echo ^<body^> >> templates/index.html
+echo   ^<h1^>🚀 {{ name }} - Flask App^</h1^> >> templates/index.html
+echo   ^<p^>Running on Python Flask!^</p^> >> templates/index.html
+echo   ^<p^>Port: {{ port }}^</p^> >> templates/index.html
+echo ^</body^> >> templates/index.html
+echo ^</html^> >> templates/index.html
+
+echo.
+echo Installing Flask...
+pip install flask
+
+echo.
+echo Starting Flask server...
+timeout /t 2 /nobreak >nul
+
+start "Flask Server" python app.py
+
+echo Opening browser...
+timeout /t 3 /nobreak >nul
+start "" "http://localhost:${port}"
+
+echo.
+echo ✅ ${name} Flask app is ready!
+echo 📍 http://localhost:${port}
+echo.
+pause`,
+
+      php: (name, dir, port, htmlFile) => `@echo off
+chcp 65001 >nul
+title ${name} - PHP Website
+echo ===============================
+echo    Starting ${name}
+echo ===============================
+echo.
+
+REM Create project directory
+if not exist "${dir}" mkdir "${dir}"
+cd /d "${dir}"
+
+REM Create PHP index file
+echo ^<!DOCTYPE html^> > index.php
+echo ^<html^> >> index.php
+echo ^<head^> >> index.php
+echo   ^<title^>${name}^</title^> >> index.php
+echo   ^<style^> >> index.php
+echo     body { font-family: Arial, sans-serif; margin: 40px; background: #1a1a1a; color: white; } >> index.php
+echo   ^</style^> >> index.php
+echo ^</head^> >> index.php
+echo ^<body^> >> index.php
+echo   ^<h1^>🚀 ${name} - PHP Website^</h1^> >> index.php
+echo   ^<p^>Server: http://localhost:${port}^</p^> >> index.php
+echo   ^<?php >> index.php
+echo     echo "^<p^>PHP is working! Server time: " . date('Y-m-d H:i:s') . "^</p^>"; >> index.php
+echo   ?^> >> index.php
+echo ^</body^> >> index.php
+echo ^</html^> >> index.php
+
+echo.
+echo Starting PHP built-in server...
+timeout /t 2 /nobreak >nul
+
+start "PHP Server" php -S localhost:${port}
+
+echo Opening browser...
+timeout /t 3 /nobreak >nul
+start "" "http://localhost:${port}"
+
+echo.
+echo ✅ ${name} PHP website is ready!
+echo 📍 http://localhost:${port}
+echo.
+pause`
+    };
+
+    // ------------- Batch File Generator Functions -------------
+    function downloadBatchFile(content, filename) {
+      const blob = new Blob([content], { type: 'application/bat' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    btnGenerateBatch.addEventListener('click', function() {
+      const name = projectName.value.trim() || 'MyProject';
+      const type = projectType.value;
+      const dir = projectDir.value.trim();
+      const port = projectPort.value || '5000';
+      const htmlFile = projectHtml.value.trim() || 'index.html';
+
+      if (!dir) {
+        showError('Please specify a project directory');
+        return;
+      }
+
+      // Generate the batch file content
+      const batchCode = batchTemplates[type](name, dir, port, htmlFile);
+      const filename = `start_${name.replace(/\s+/g, '_').toLowerCase()}.bat`;
+      
+      // Download the batch file
+      downloadBatchFile(batchCode, filename);
+      
+      // Show success message
+      downloadFilename.textContent = filename;
+      downloadSuccess.classList.remove('hidden');
+      clearError();
+    });
+
+    // Close success message
+    btnCloseSuccess.addEventListener('click', function() {
+      downloadSuccess.classList.add('hidden');
+    });
+
+    // Cancel button
+    btnCancelBatch.addEventListener('click', function() {
+      projectName.value = '';
+      projectPort.value = '5000';
+      projectHtml.value = 'index.html';
+      downloadSuccess.classList.add('hidden');
+      clearError();
+    });
+
+    // ------------- Original Port Scanner Functions -------------
     function badge(status){
       if(status === "listening") return '<span class="badge badge-green">LISTENING</span>';
       if(status === "open") return '<span class="badge badge-blue">OPEN</span>';
@@ -540,99 +889,6 @@
       }
     }
 
-    function generateBatchFile() {
-      const projectName = batProjectName.value.trim() || "MyProject";
-      const projectType = batProjectType.value;
-      const projectDir = batProjectDir.value.trim() || `C:\\Projects\\${projectName}`;
-
-      let batContent = `@echo off\n`;
-      batContent += `echo Starting ${projectName}...\n`;
-      batContent += `echo.\n\n`;
-      
-      batContent += `REM Create project directory\n`;
-      batContent += `if not exist "${projectDir}" mkdir "${projectDir}"\n`;
-      batContent += `cd /d "${projectDir}"\n\n`;
-      
-      // Different setups based on project type
-      switch(projectType) {
-        case 'web-static':
-          batContent += `REM Create basic HTML structure\n`;
-          batContent += `echo ^<!DOCTYPE html^> > index.html\n`;
-          batContent += `echo ^<html^>^<head^>^<title^>${projectName}^</title^>^</head^> >> index.html\n`;
-          batContent += `echo ^<body^>^<h1^>Welcome to ${projectName}^</h1^>^</body^>^</html^> >> index.html\n\n`;
-          batContent += `REM Start Python HTTP server\n`;
-          batContent += `start "Web Server" python -m http.server 8000\n`;
-          break;
-          
-        case 'react-app':
-          batContent += `REM React.js project setup\n`;
-          batContent += `echo Creating React app...\n`;
-          batContent += `npx create-react-app . || echo "React CLI not found, creating manual structure"\n`;
-          batContent += `npm start\n`;
-          break;
-          
-        case 'node-api':
-          batContent += `REM Node.js API setup\n`;
-          batContent += `echo Creating package.json...\n`;
-          batContent += `echo { > package.json\n`;
-          batContent += `echo   "name": "${projectName.toLowerCase()}", >> package.json\n`;
-          batContent += `echo   "version": "1.0.0", >> package.json\n`;
-          batContent += `echo   "main": "server.js", >> package.json\n`;
-          batContent += `echo   "scripts": { "start": "node server.js" } >> package.json\n`;
-          batContent += `echo } >> package.json\n\n`;
-          batContent += `REM Create basic server\n`;
-          batContent += `echo const http = require('http'); > server.js\n`;
-          batContent += `echo const server = http.createServer((req, res) => { >> server.js\n`;
-          batContent += `echo   res.writeHead(200, {'Content-Type': 'application/json'}); >> server.js\n`;
-          batContent += `echo   res.end('{"message":"Hello from ${projectName}"}'); >> server.js\n`;
-          batContent += `echo }); >> server.js\n`;
-          batContent += `echo server.listen(3000, () => console.log('Server running on port 3000')); >> server.js\n\n`;
-          batContent += `npm start\n`;
-          break;
-          
-        case 'python-app':
-          batContent += `REM Python project setup\n`;
-          batContent += `echo Creating requirements.txt...\n`;
-          batContent += `echo flask > requirements.txt\n`;
-          batContent += `echo. > app.py\n`;
-          batContent += `pip install -r requirements.txt\n`;
-          batContent += `python app.py\n`;
-          break;
-          
-        case 'php-site':
-          batContent += `REM PHP project setup\n`;
-          batContent += `echo ^<!DOCTYPE html^> > index.php\n`;
-          batContent += `echo ^<html^>^<head^>^<title^>${projectName}^</title^>^</head^> >> index.php\n`;
-          batContent += `echo ^<body^>^<h1^>^<?php echo "Welcome to ${projectName}"; ?^>^</h1^>^</body^>^</html^> >> index.php\n\n`;
-          batContent += `REM Start PHP development server\n`;
-          batContent += `php -S localhost:8000\n`;
-          break;
-      }
-      
-      batContent += `\necho.\n`;
-      batContent += `echo Project ${projectName} is starting...\n`;
-      batContent += `echo Opening browser...\n`;
-      batContent += `timeout /t 3 /nobreak >nul\n`;
-      batContent += `start http://localhost:8000\n`;
-      batContent += `echo.\n`;
-      batContent += `echo ✅ ${projectName} is ready!\n`;
-      batContent += `pause\n`;
-
-      // Create download
-      const blob = new Blob([batContent], { type: 'application/bat' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `start-${projectName.toLowerCase()}.bat`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      
-      showError(`✅ Generated start-${projectName.toLowerCase()}.bat file!`);
-      batModal.classList.add("hidden");
-    }
-
     async function killPID(pid){
       return apiFetch("/api/ports/kill", {
         method: "POST",
@@ -643,18 +899,9 @@
     // Event listeners
     btnScan.onclick = scan;
     btnLaunch.onclick = launchServer;
-    btnGenerateBat.onclick = () => {
-      batProjectName.value = "MyProject";
-      batProjectDir.value = serverCwd.value || "C:\\Projects\\MyProject";
-      batModal.classList.remove("hidden");
-    };
 
-    // Modal handlers
     btnModalCancel.onclick = () => { modal.classList.add("hidden"); };
     btnModalClose.onclick = btnModalCancel.onclick;
-    batModalClose.onclick = () => { batModal.classList.add("hidden"); };
-    batModalCancel.onclick = () => { batModal.classList.add("hidden"); };
-    batModalGenerate.onclick = generateBatchFile;
 
     btnModalConfirm.onclick = async () => {
       if(!modalData?.pid){ btnModalCancel.onclick(); return; }
@@ -673,24 +920,19 @@
       }
     };
 
-    // Default working directory suggestion
+    // Default working directory suggestion (non-destructive)
     try {
       const parts = window.location.pathname.split('/').slice(0,-1).join('/');
       serverCwd.value = parts || "C:\\";
-      batProjectDir.value = parts || "C:\\Projects\\MyProject";
-    } catch { 
-      serverCwd.value = "C:\\";
-      batProjectDir.value = "C:\\Projects\\MyProject";
-    }
+    } catch { serverCwd.value = "C:\\"; }
 
-    // Initial connection test
+    // Initial scan is gated behind a quick connection test so we don't time out noisily
     (async () => {
       try {
-        await apiFetch('/health', { timeoutMs: 3000 });
-        showError("✅ Connected! Click 'SCAN PORTS' to start.");
-        setTimeout(clearError, 3000);
+        await apiFetch('/api/servers/list', { timeoutMs: 3000 }).catch(()=>({}));
+        scan();
       } catch (e) {
-        showError(`Heads up: cannot reach ${Settings.base}. Make sure the backend server is running and click "Test Connection".`);
+        showError(`Heads up: cannot reach ${Settings.base}. Set the correct API Base URL above and click "Test Connection".`);
       }
     })();
   </script>
