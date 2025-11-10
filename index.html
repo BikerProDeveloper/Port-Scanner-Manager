@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Port Scanner & Server Manager</title>
+  <title>DevSuite - Port Scanner & Server Manager</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -31,223 +31,67 @@
     .gradient-border::before{content:''; position:absolute; inset:0; border-radius:12px; padding:2px; background:linear-gradient(135deg, #00e5ff 0%, #0099cc 50%, #0066cc 100%); mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0); mask-composite:xor; -webkit-mask-composite:xor; pointer-events:none}
     .floating{animation:floating 3s ease-in-out infinite}@keyframes floating{0%,100%{transform:translateY(0px)}50%{transform:translateY(-10px)}}
     .type-bar{transition:width 1.5s ease-in-out; border-radius:4px}
+    .tab-button{@apply px-4 py-2 border-b-2 border-transparent hover:border-cyan-400 transition-all;}
+    .tab-button.active{@apply border-cyan-400 text-cyan-400;}
+    .loading{opacity:0.6; pointer-events:none}
   </style>
 </head>
 <body class="bg-black text-white min-h-screen font-mono">
   <div class="max-w-7xl mx-auto p-4 md:p-8">
     <!-- Header -->
-    <header class="mb-6 text-center">
-      <h1 class="text-4xl font-bold text-cyan-400 neon-glow mb-2">🚀 PORT SCANNER & SERVER MANAGER</h1>
-      <p class="text-green-400">Scan ports • Kill processes • Launch servers • Full control</p>
+    <header class="mb-8 text-center">
+      <h1 class="text-4xl font-bold text-cyan-400 neon-glow mb-2">🚀 DevSuite</h1>
+      <p class="text-green-400 text-lg">Port Scanner & Server Manager</p>
+      <p class="text-gray-400 text-sm mt-2">Complete development environment management</p>
       <div class="mt-4 flex justify-center gap-4 flex-wrap">
-        <span class="bg-purple-600 px-3 py-1 rounded-full text-sm">⚡ 4 Project Types</span>
-        <span class="bg-green-600 px-3 py-1 rounded-full text-sm">🚀 Instant Setup</span>
-        <span class="bg-blue-600 px-3 py-1 rounded-full text-sm">💼 Professional</span>
-        <span class="bg-cyan-600 px-3 py-1 rounded-full text-sm pulse" id="live-badge">📊 Live Stats</span>
+        <span class="bg-purple-600 px-3 py-1 rounded-full text-sm">🔍 Real Port Scanning</span>
+        <span class="bg-green-600 px-3 py-1 rounded-full text-sm">🚀 4 Project Types</span>
+        <span class="bg-blue-600 px-3 py-1 rounded-full text-sm">⚡ Batch Automation</span>
+        <span class="bg-cyan-600 px-3 py-1 rounded-full text-sm">🎯 Multi-Server</span>
       </div>
     </header>
 
-    <!-- NEW: Dedicated Stats Section -->
-    <section class="gradient-border mb-6">
+    <!-- Quick Start Section -->
+    <section class="gradient-border mb-8">
       <div class="bg-gray-900 rounded-xl p-6">
-        <div class="flex items-center justify-between mb-6">
-          <div class="flex items-center gap-3">
-            <div class="text-3xl floating">📊</div>
-            <div>
-              <h2 class="text-2xl font-bold text-cyan-400 neon-glow">LIVE COMMUNITY STATS</h2>
-              <p class="text-green-400 text-sm">Real-time tracking of .bat creation and user activity</p>
-            </div>
+        <h2 class="text-2xl font-bold text-cyan-400 neon-glow mb-4 text-center">🎯 Get Started in 60 Seconds</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="text-center p-4">
+            <div class="text-3xl mb-3">1</div>
+            <h3 class="text-green-400 font-semibold mb-2">Scan Your System</h3>
+            <p class="text-gray-400 text-sm">Discover active ports and processes with real system scanning</p>
+            <button onclick="showTab('scanner')" class="mt-3 px-4 py-2 bg-green-600 rounded-lg hover:bg-green-700 transition-all text-sm">
+              Start Scanning
+            </button>
           </div>
-          <div class="text-right">
-            <div class="text-xs text-gray-400">Last updated</div>
-            <div id="stats-updated" class="text-yellow-400 text-sm font-mono">just now</div>
+          <div class="text-center p-4">
+            <div class="text-3xl mb-3">2</div>
+            <h3 class="text-blue-400 font-semibold mb-2">Create Projects</h3>
+            <p class="text-gray-400 text-sm">Generate complete project structures with automated scripts</p>
+            <button onclick="showTab('projects')" class="mt-3 px-4 py-2 bg-blue-600 rounded-lg hover:bg-blue-700 transition-all text-sm">
+              Create Project
+            </button>
           </div>
-        </div>
-
-        <!-- Stats Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <!-- Total .bats Card -->
-          <div class="stats-card rounded-xl p-4">
-            <div class="flex items-center justify-between mb-3">
-              <div class="text-2xl">🏆</div>
-              <div class="bg-green-900 px-2 py-1 rounded-full text-xs text-green-400 pulse">
-                <span id="today-growth">+0</span> today
-              </div>
-            </div>
-            <div class="text-sm text-cyan-400 mb-1">TOTAL .BATS CREATED</div>
-            <div class="text-2xl font-bold text-yellow-400 counter-animation" id="total-bats">0</div>
-            <div class="text-xs text-gray-400 mt-2">projects worldwide</div>
-            <div class="mt-3 bg-gray-800 rounded-full h-2">
-              <div class="bg-gradient-to-r from-green-500 to-cyan-500 h-2 rounded-full progress-bar" 
-                   id="milestone-progress" style="width: 0%"></div>
-            </div>
-            <div class="text-xs text-gray-400 mt-2 flex justify-between">
-              <span>Progress</span>
-              <span id="next-milestone-text">Next: 100</span>
-            </div>
+          <div class="text-center p-4">
+            <div class="text-3xl mb-3">3</div>
+            <h3 class="text-purple-400 font-semibold mb-2">Launch Servers</h3>
+            <p class="text-gray-400 text-sm">Start multiple servers and manage everything in one place</p>
+            <button onclick="showTab('servers')" class="mt-3 px-4 py-2 bg-purple-600 rounded-lg hover:bg-purple-700 transition-all text-sm">
+              Manage Servers
+            </button>
           </div>
-
-          <!-- Daily Activity Card -->
-          <div class="stats-card rounded-xl p-4">
-            <div class="flex items-center justify-between mb-3">
-              <div class="text-2xl">📅</div>
-              <div class="bg-blue-900 px-2 py-1 rounded-full text-xs text-blue-400">
-                <span id="current-date">Today</span>
-              </div>
-            </div>
-            <div class="text-sm text-cyan-400 mb-1">DAILY ACTIVITY</div>
-            <div class="space-y-2">
-              <div class="flex justify-between items-center">
-                <span class="text-gray-400 text-sm">.bats created:</span>
-                <span class="text-green-400 font-bold" id="today-bats">0</span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-gray-400 text-sm">Active users:</span>
-                <span class="text-blue-400 font-bold pulse" id="active-users">1</span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-gray-400 text-sm">Downloads:</span>
-                <span class="text-purple-400 font-bold" id="total-downloads">0</span>
-              </div>
-            </div>
-            <div class="mt-3 text-xs text-center text-gray-500">
-              Updates every 30 seconds
-            </div>
-          </div>
-
-          <!-- Project Distribution Card -->
-          <div class="stats-card rounded-xl p-4">
-            <div class="flex items-center justify-between mb-3">
-              <div class="text-2xl">🎯</div>
-              <div class="bg-purple-900 px-2 py-1 rounded-full text-xs text-purple-400">
-                Distribution
-              </div>
-            </div>
-            <div class="text-sm text-cyan-400 mb-3">PROJECT TYPES</div>
-            <div class="space-y-3">
-              <!-- Static -->
-              <div>
-                <div class="flex justify-between text-xs mb-1">
-                  <span class="text-green-400">🐍 Static</span>
-                  <span class="text-gray-400" id="static-percent">0%</span>
-                </div>
-                <div class="bg-gray-800 rounded-full h-2">
-                  <div class="bg-green-500 h-2 rounded-full type-bar" id="static-bar" style="width: 0%"></div>
-                </div>
-                <div class="text-right text-xs text-gray-400 mt-1" id="static-count">0 projects</div>
-              </div>
-              <!-- Node -->
-              <div>
-                <div class="flex justify-between text-xs mb-1">
-                  <span class="text-blue-400">⚡ Node.js</span>
-                  <span class="text-gray-400" id="node-percent">0%</span>
-                </div>
-                <div class="bg-gray-800 rounded-full h-2">
-                  <div class="bg-blue-500 h-2 rounded-full type-bar" id="node-bar" style="width: 0%"></div>
-                </div>
-                <div class="text-right text-xs text-gray-400 mt-1" id="node-count">0 projects</div>
-              </div>
-              <!-- Python -->
-              <div>
-                <div class="flex justify-between text-xs mb-1">
-                  <span class="text-orange-400">🌶️ Python</span>
-                  <span class="text-gray-400" id="python-percent">0%</span>
-                </div>
-                <div class="bg-gray-800 rounded-full h-2">
-                  <div class="bg-orange-500 h-2 rounded-full type-bar" id="python-bar" style="width: 0%"></div>
-                </div>
-                <div class="text-right text-xs text-gray-400 mt-1" id="python-count">0 projects</div>
-              </div>
-              <!-- PHP -->
-              <div>
-                <div class="flex justify-between text-xs mb-1">
-                  <span class="text-purple-400">🐘 PHP</span>
-                  <span class="text-gray-400" id="php-percent">0%</span>
-                </div>
-                <div class="bg-gray-800 rounded-full h-2">
-                  <div class="bg-purple-500 h-2 rounded-full type-bar" id="php-bar" style="width: 0%"></div>
-                </div>
-                <div class="text-right text-xs text-gray-400 mt-1" id="php-count">0 projects</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Community Card -->
-          <div class="stats-card rounded-xl p-4">
-            <div class="flex items-center justify-between mb-3">
-              <div class="text-2xl">👥</div>
-              <div class="bg-cyan-900 px-2 py-1 rounded-full text-xs text-cyan-400 pulse">
-                Live
-              </div>
-            </div>
-            <div class="text-sm text-cyan-400 mb-1">COMMUNITY</div>
-            <div class="space-y-3">
-              <div class="flex items-center justify-between">
-                <span class="text-gray-400 text-sm">Online now:</span>
-                <div class="flex items-center gap-2">
-                  <div class="w-2 h-2 bg-green-500 rounded-full pulse"></div>
-                  <span class="text-green-400 font-bold" id="online-now">1</span>
-                </div>
-              </div>
-              <div class="flex items-center justify-between">
-                <span class="text-gray-400 text-sm">Total developers:</span>
-                <span class="text-yellow-400 font-bold" id="total-developers">0</span>
-              </div>
-              <div class="flex items-center justify-between">
-                <span class="text-gray-400 text-sm">Weekly growth:</span>
-                <span class="text-blue-400 font-bold" id="weekly-growth">+0</span>
-              </div>
-            </div>
-            
-            <!-- Achievement Badge -->
-            <div id="achievement-badge" class="mt-4 bg-gradient-to-r from-purple-600 to-pink-600 p-3 rounded-lg text-center hidden">
-              <div class="text-lg mb-1" id="badge-icon">🏆</div>
-              <div class="text-xs font-bold text-white" id="badge-text">Loading...</div>
-              <div class="text-xs text-yellow-300 mt-1">Community Achievement!</div>
-            </div>
-
-            <!-- Next Milestone -->
-            <div class="mt-3 text-center">
-              <div class="text-xs text-gray-400">Next milestone at</div>
-              <div class="text-yellow-400 font-bold" id="next-milestone">100</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="flex justify-center gap-4">
-          <button onclick="refreshStats()" class="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-all text-sm">
-            🔄 Refresh Stats
-          </button>
-          <button onclick="shareStats()" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all text-sm">
-            📤 Share Progress
-          </button>
         </div>
       </div>
     </section>
 
-    <!-- Settings -->
-    <section class="bg-gray-900 rounded-xl terminal-border p-4 mb-6">
-      <div class="flex items-center justify-between mb-3">
-        <div class="text-cyan-300 font-semibold neon-glow">⚙️ SETTINGS</div>
-        <div class="text-xs text-gray-400">Tip: Press <span class="kbd">S</span> to focus the URL field quickly</div>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-        <div class="field">
-          <label class="label text-cyan-400 text-sm">API Base URL</label>
-          <input id="api-base" type="text" placeholder="http://127.0.0.1:5502" class="w-full p-2 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300" />
-        </div>
-        <div class="field">
-          <label class="label text-cyan-400 text-sm">API Token</label>
-          <input id="api-token" type="password" placeholder="(optional)" class="w-full p-2 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300" />
-        </div>
-        <div class="flex gap-2 items-end">
-          <button id="btn-save-settings" class="w-full px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-lg hover:from-cyan-700 hover:to-blue-700">Save</button>
-          <button id="btn-test" class="w-full px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 rounded-lg hover:from-green-700 hover:to-emerald-700">Test Connection</button>
-        </div>
-      </div>
-      <p class="text-xs text-gray-400 mt-2">All requests send <code class="text-yellow-400">X-PSM-Token</code> when provided. Values persist in <code class="text-yellow-400">localStorage</code>.</p>
-    </section>
+    <!-- Main Navigation Tabs -->
+    <div class="flex border-b border-cyan-800 mb-6 overflow-x-auto">
+      <button class="tab-button active whitespace-nowrap" data-tab="scanner">🔍 Port Scanner</button>
+      <button class="tab-button whitespace-nowrap" data-tab="projects">🛠️ Project Creator</button>
+      <button class="tab-button whitespace-nowrap" data-tab="servers">🚀 Server Manager</button>
+      <button class="tab-button whitespace-nowrap" data-tab="quick">⚡ Quick Launcher</button>
+      <button class="tab-button whitespace-nowrap" data-tab="system">📊 System Monitor</button>
+    </div>
 
     <!-- Error Display -->
     <div id="error" class="hidden mb-4 p-3 terminal-border bg-gray-900 text-red-400 rounded"></div>
@@ -255,1885 +99,1236 @@
     <!-- Success Message -->
     <div id="success" class="hidden mb-4 p-3 terminal-border bg-green-900 text-green-400 rounded"></div>
 
-    <!-- Project Type Selection -->
-    <div class="bg-gray-900 rounded-xl terminal-border p-6 mb-6">
-      <div class="flex items-center justify-between mb-6">
-        <div class="flex items-center gap-2 font-semibold text-purple-400 neon-glow text-xl">
-          🎯 SELECT PROJECT TYPE
-        </div>
-        <div class="text-sm text-cyan-400">
-          Join <span id="community-count" class="text-yellow-400 font-bold">0</span> developers creating amazing projects!
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <!-- Static Website Card -->
-        <div class="project-card bg-gray-800 rounded-xl p-6 cursor-pointer" data-type="static">
-          <div class="text-center mb-4">
-            <div class="text-4xl mb-2">🐍</div>
-            <h3 class="text-lg font-bold text-green-400">Sitio Web Estático</h3>
-            <p class="text-sm text-gray-400 mt-1">Perfecto para negocios locales</p>
+    <!-- Tab 1: Port Scanner -->
+    <div id="tab-scanner" class="tab-content">
+      <section class="bg-gray-900 rounded-xl terminal-border p-6 mb-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2 font-semibold text-green-400 neon-glow">
+            🔍 REAL-TIME PORT SCANNER
           </div>
-          <div class="space-y-2 text-sm">
-            <div class="flex items-center gap-2">
-              <span class="text-green-400">✓</span>
-              <span>HTML5 semántico completo</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-green-400">✓</span>
-              <span>CSS responsive moderno</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-green-400">✓</span>
-              <span>JavaScript listo</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-green-400">✓</span>
-              <span>Servidor Python</span>
-            </div>
-          </div>
-          <div class="mt-4 p-3 bg-gray-700 rounded-lg">
-            <p class="text-xs text-cyan-400">Ejemplo: Taquería "El Güero" - sitio con menú, ubicación y contacto</p>
-            <div class="flex justify-between items-center mt-2">
-              <span class="text-xs text-gray-400">Community:</span>
-              <span class="text-xs text-green-400 font-bold" id="card-static">0 projects</span>
-            </div>
+          <div class="text-xs text-cyan-400">
+            Powered by Backend API • Live system monitoring
           </div>
         </div>
 
-        <!-- Node.js App Card -->
-        <div class="project-card bg-gray-800 rounded-xl p-6 cursor-pointer" data-type="node">
-          <div class="text-center mb-4">
-            <div class="text-4xl mb-2">⚡</div>
-            <h3 class="text-lg font-bold text-blue-400">Aplicación Node.js</h3>
-            <p class="text-sm text-gray-400 mt-1">Apps complejas con usuarios</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div>
+            <label class="block text-cyan-400 text-sm mb-2">Scan Range</label>
+            <select id="scan-range" class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
+              <option value="common">Common Ports (1-1024)</option>
+              <option value="extended">Extended (1-10000)</option>
+              <option value="all">All Ports (1-65535)</option>
+            </select>
           </div>
-          <div class="space-y-2 text-sm">
-            <div class="flex items-center gap-2">
-              <span class="text-green-400">✓</span>
-              <span>Servidor Express.js</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-green-400">✓</span>
-              <span>Frontend + Backend</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-green-400">✓</span>
-              <span>Sistema de rutas</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-green-400">✓</span>
-              <span>Base de datos lista</span>
-            </div>
+          <div>
+            <label class="block text-cyan-400 text-sm mb-2">Scan Type</label>
+            <select id="scan-type" class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
+              <option value="tcp">TCP Ports</option>
+              <option value="udp">UDP Ports</option>
+              <option value="both">Both TCP & UDP</option>
+            </select>
           </div>
-          <div class="mt-4 p-3 bg-gray-700 rounded-lg">
-            <p class="text-xs text-cyan-400">Ejemplo: Venta de artesanías online con catálogo y carrito</p>
-            <div class="flex justify-between items-center mt-2">
-              <span class="text-xs text-gray-400">Community:</span>
-              <span class="text-xs text-blue-400 font-bold" id="card-node">0 projects</span>
-            </div>
+          <div class="flex items-end">
+            <button id="btn-scan" class="w-full px-6 py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white font-bold rounded-lg hover:from-green-700 hover:to-blue-700 transition-all">
+              🚀 START SCAN
+            </button>
           </div>
         </div>
 
-        <!-- Python Flask Card -->
-        <div class="project-card bg-gray-800 rounded-xl p-6 cursor-pointer" data-type="python">
-          <div class="text-center mb-4">
-            <div class="text-4xl mb-2">🌶️</div>
-            <h3 class="text-lg font-bold text-orange-400">Aplicación Python Flask</h3>
-            <p class="text-sm text-gray-400 mt-1">Datos y machine learning</p>
+        <!-- Scan Progress -->
+        <div id="scan-progress" class="hidden mb-4">
+          <div class="flex items-center justify-between text-sm text-cyan-400 mb-2">
+            <span>Scanning ports...</span>
+            <span id="scan-progress-text">0%</span>
           </div>
-          <div class="space-y-2 text-sm">
-            <div class="flex items-center gap-2">
-              <span class="text-green-400">✓</span>
-              <span>Framework Flask</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-green-400">✓</span>
-              <span>Templates Jinja2</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-green-400">✓</span>
-              <span>Archivos estáticos</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-green-400">✓</span>
-              <span>Listo para producción</span>
-            </div>
-          </div>
-          <div class="mt-4 p-3 bg-gray-700 rounded-lg">
-            <p class="text-xs text-cyan-400">Ejemplo: Dashboard análisis datos agrícolas y precios</p>
-            <div class="flex justify-between items-center mt-2">
-              <span class="text-xs text-gray-400">Community:</span>
-              <span class="text-xs text-orange-400 font-bold" id="card-python">0 projects</span>
-            </div>
+          <div class="w-full bg-gray-800 rounded-full h-2">
+            <div id="scan-progress-bar" class="bg-cyan-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
           </div>
         </div>
 
-        <!-- PHP Website Card -->
-        <div class="project-card bg-gray-800 rounded-xl p-6 cursor-pointer" data-type="php">
-          <div class="text-center mb-4">
-            <div class="text-4xl mb-2">🐘</div>
-            <h3 class="text-lg font-bold text-purple-400">Sitio Web PHP</h3>
-            <p class="text-sm text-gray-400 mt-1">Desarrollo web tradicional</p>
-          </div>
-          <div class="space-y-2 text-sm">
-            <div class="flex items-center gap-2">
-              <span class="text-green-400">✓</span>
-              <span>Servidor PHP integrado</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-green-400">✓</span>
-              <span>Procesamiento formularios</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-green-400">✓</span>
-              <span>Sesiones de usuario</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-green-400">✓</span>
-              <span>Conexión BD preparada</span>
-            </div>
-          </div>
-          <div class="mt-4 p-3 bg-gray-700 rounded-lg">
-            <p class="text-xs text-cyan-400">Ejemplo: Sistema reservas hotel con pagos y gestión</p>
-            <div class="flex justify-between items-center mt-2">
-              <span class="text-xs text-gray-400">Community:</span>
-              <span class="text-xs text-purple-400 font-bold" id="card-php">0 projects</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Batch File Generator Section -->
-    <div id="batch-generator" class="bg-gray-900 rounded-xl terminal-border p-6 mb-6 hidden">
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center gap-2 font-semibold text-purple-400 neon-glow">
-          📁 GENERATE PROJECT .BAT FILE
-        </div>
-        <button id="btn-back-to-selection" class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600">
-          ← Back to Selection
-        </button>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div>
-          <label class="block text-cyan-400 text-sm mb-2">Project Name</label>
-          <input type="text" id="project-name" placeholder="MyProject" 
-                 class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
-        </div>
-        <div>
-          <label class="block text-cyan-400 text-sm mb-2">Project Type</label>
-          <select id="project-type" class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
-            <option value="static">🐍 Static Website</option>
-            <option value="node">⚡ Node.js App</option>
-            <option value="python">🌶️ Python Flask</option>
-            <option value="php">🐘 PHP Website</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 gap-4 mb-4">
-        <div>
-          <label class="block text-cyan-400 text-sm mb-2">Project Directory</label>
-          <input type="text" id="project-dir" 
-                 value="C:\Users\Jo\OneDrive\Documents\Servidor de Pruebas de Proyectos\new"
-                 class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div>
-          <label class="block text-cyan-400 text-sm mb-2">Default Port Number</label>
-          <input type="number" id="project-port" placeholder="5000" value="5000"
-                 class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
-        </div>
-        <div>
-          <label class="block text-cyan-400 text-sm mb-2">HTML File Name</label>
-          <input type="text" id="project-html" placeholder="index.html" value="index.html"
-                 class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
-        </div>
-      </div>
-
-      <!-- Project Structure Preview -->
-      <div class="bg-gray-800 p-4 rounded-lg mb-6">
-        <h3 class="text-cyan-400 text-sm mb-3">📁 PROJECT STRUCTURE THAT WILL BE CREATED:</h3>
-        <div id="structure-preview" class="text-sm font-mono text-green-400">
-          Select a project type to preview structure...
-        </div>
-      </div>
-
-      <div class="flex gap-4">
-        <button id="btn-cancel-batch" class="w-1/2 px-6 py-3 bg-gray-700 text-white font-bold rounded-lg hover:bg-gray-600 transition-all">
-          CANCEL
-        </button>
-        <button id="btn-generate-batch" class="w-1/2 px-6 py-3 bg-gradient-to-r from-purple-600 to-cyan-600 text-white font-bold rounded-lg hover:from-purple-700 hover:to-cyan-700 transition-all">
-          📥 DOWNLOAD .BAT FILE
-        </button>
-      </div>
-    </div>
-
-    <!-- Download Success Message -->
-    <div id="download-success" class="hidden bg-green-900 rounded-xl terminal-border p-6 mb-6">
-      <div class="flex items-center justify-between">
-        <h3 class="text-green-400 font-semibold text-lg">✅ BATCH FILE DOWNLOADED SUCCESSFULLY!</h3>
-        <button id="btn-close-success" class="px-4 py-2 bg-green-700 text-white rounded hover:bg-green-600">Close</button>
-      </div>
-      <div class="mt-4 text-sm text-cyan-400">
-        <p>📁 File: <span id="download-filename" class="text-yellow-400">start_myproject.bat</span></p>
-        <p>📍 Save it in your project directory and double-click to run!</p>
-        <div class="mt-3 p-3 bg-green-800 rounded-lg">
-          <p class="text-yellow-300">🚀 <b>Next Steps:</b> Double-click the .bat file, enter your port number, and watch your professional project come to life!</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Original Server Creation Section -->
-    <div class="bg-gray-900 rounded-xl terminal-border p-6 mb-6">
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center gap-2 font-semibold text-purple-400 neon-glow">
-          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M4 4h16v6H4zM4 14h16v6H4z"/></svg>
-          🚀 LAUNCH NEW SERVER
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div>
-          <label class="block text-cyan-400 text-sm mb-2">Server Name</label>
-          <input type="text" id="server-name" placeholder="My Web Server" 
-                 class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
-        </div>
-        <div>
-          <label class="block text-cyan-400 text-sm mb-2">Working Directory</label>
-          <input type="text" id="server-cwd" placeholder="C:\\path\\to\\project" 
-                 class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        <div>
-          <label class="block text-cyan-400 text-sm mb-2">Port Number</label>
-          <input type="number" id="server-port" placeholder="3000" 
-                 class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
-        </div>
-        <div>
-          <label class="block text-cyan-400 text-sm mb-2">Server Type</label>
-          <select id="server-template" class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
-            <option value="py-http">Python HTTP Server</option>
-            <option value="node-index">Node.js Server</option>
-            <option value="gunicorn-app">Gunicorn App</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-cyan-400 text-sm mb-2">HTML File (Optional)</label>
-          <input type="text" id="server-html" placeholder="index.html" 
-                 class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
-        </div>
-      </div>
-
-      <button id="btn-launch" class="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-cyan-600 text-white font-bold rounded-lg hover:from-purple-700 hover:to-cyan-700 transition-all">
-        🚀 LAUNCH SERVER
-      </button>
-    </div>
-
-    <!-- Main Port Scanner Section -->
-    <div class="bg-gray-900 rounded-xl terminal-border">
-      <div class="flex items-center justify-between px-6 py-4 border-b border-cyan-800">
-        <div class="flex items-center gap-2 font-semibold text-green-400 neon-glow">
-          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M4 4h16v6H4zM4 14h16v6H4z"/></svg>
-          🔍 ACTIVE PORTS & SERVERS
-        </div>
-        <div class="flex items-center gap-2">
-          <button id="btn-scan" class="px-6 py-2 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-lg hover:from-green-700 hover:to-blue-700 transition-all">SCAN PORTS</button>
-          <span id="scan-spinner" class="hidden spin text-cyan-400">🔄</span>
-        </div>
-      </div>
-
-      <!-- Stats -->
-      <div class="px-6 py-3 text-sm grid grid-cols-2 md:grid-cols-5 gap-4 border-b border-cyan-800">
-        <div class="text-cyan-400">TCP: <span id="stat-tcp" class="font-semibold text-white">0</span></div>
-        <div class="text-cyan-400">UDP: <span id="stat-udp" class="font-semibold text-white">0</span></div>
-        <div class="text-cyan-400">Total: <span id="stat-total" class="font-semibold text-white">0</span></div>
-        <div class="text-cyan-400">Servers: <span id="stat-servers" class="font-semibold text-white">0</span></div>
-        <div class="text-cyan-400">Updated: <span id="stat-time" class="font-mono text-yellow-400">—</span></div>
-      </div>
-
-      <!-- Empty State -->
-      <div id="empty" class="text-center py-12 hidden">
-        <div class="text-yellow-400 text-5xl mb-2">⚠️</div>
-        <h3 class="text-lg font-medium text-white mb-2">No active ports found</h3>
-        <p class="text-gray-400">Click "SCAN PORTS" to discover active network connections</p>
-      </div>
-
-      <!-- Tables -->
-      <div id="table-wrap" class="overflow-x-auto hidden">
-        <!-- Ports Table -->
-        <div class="border-b border-cyan-800">
-          <h3 class="px-6 py-3 text-orange-400 font-semibold neon-glow">📡 ACTIVE PORTS</h3>
+        <!-- Active Ports Table -->
+        <div class="overflow-x-auto mt-6">
           <table class="w-full text-sm">
             <thead class="bg-gray-800 text-cyan-400">
               <tr>
                 <th class="text-left p-3">Port</th>
                 <th class="text-left p-3">Protocol</th>
-                <th class="text-left p-3">Status</th>
-                <th class="text-left p-3">Service</th>
                 <th class="text-left p-3">Process</th>
-                <th class="text-right p-3">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="rows"></tbody>
-          </table>
-        </div>
-
-        <!-- Servers Table -->
-        <div>
-          <h3 class="px-6 py-3 text-purple-400 font-semibold neon-glow">🖥️ LAUNCHED SERVERS</h3>
-          <table class="w-full text-sm">
-            <thead class="bg-gray-800 text-purple-400">
-              <tr>
-                <th class="text-left p-3">Name</th>
-                <th class="text-left p-3">Port</th>
-                <th class="text-left p-3">Type</th>
                 <th class="text-left p-3">PID</th>
                 <th class="text-left p-3">Status</th>
                 <th class="text-right p-3">Actions</th>
               </tr>
             </thead>
-            <tbody id="server-rows"></tbody>
+            <tbody id="ports-table-body">
+              <tr>
+                <td colspan="6" class="text-center py-8 text-gray-500">
+                  No port scan performed yet. Click "START SCAN" to discover active ports.
+                </td>
+              </tr>
+            </tbody>
           </table>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 2: Project Creator -->
+    <div id="tab-projects" class="tab-content hidden">
+      <!-- Project Type Selection -->
+      <section class="bg-gray-900 rounded-xl terminal-border p-6 mb-6">
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center gap-2 font-semibold text-purple-400 neon-glow text-xl">
+            🎯 SELECT PROJECT TYPE
+          </div>
+          <div class="text-sm text-cyan-400">
+            Complete project templates with automated setup
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          <!-- Static Website Card -->
+          <div class="project-card bg-gray-800 rounded-xl p-6 cursor-pointer" data-type="static">
+            <div class="text-center mb-4">
+              <div class="text-4xl mb-2">🐍</div>
+              <h3 class="text-lg font-bold text-green-400">Static Website</h3>
+              <p class="text-sm text-gray-400 mt-1">HTML/CSS/JavaScript</p>
+            </div>
+            <div class="space-y-2 text-sm">
+              <div class="flex items-center gap-2">
+                <span class="text-green-400">✓</span>
+                <span>Python HTTP Server</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-green-400">✓</span>
+                <span>Folder structure</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-green-400">✓</span>
+                <span>Auto-browser launch</span>
+              </div>
+            </div>
+            <button onclick="selectProjectType('static')" class="w-full mt-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-all">
+              Select Template
+            </button>
+          </div>
+
+          <!-- Node.js App Card -->
+          <div class="project-card bg-gray-800 rounded-xl p-6 cursor-pointer" data-type="node">
+            <div class="text-center mb-4">
+              <div class="text-4xl mb-2">⚡</div>
+              <h3 class="text-lg font-bold text-blue-400">Node.js Application</h3>
+              <p class="text-sm text-gray-400 mt-1">Express.js Server</p>
+            </div>
+            <div class="space-y-2 text-sm">
+              <div class="flex items-center gap-2">
+                <span class="text-green-400">✓</span>
+                <span>Express.js setup</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-green-400">✓</span>
+                <span>Public folder</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-green-400">✓</span>
+                <span>Source structure</span>
+              </div>
+            </div>
+            <button onclick="selectProjectType('node')" class="w-full mt-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-all">
+              Select Template
+            </button>
+          </div>
+
+          <!-- Python Flask Card -->
+          <div class="project-card bg-gray-800 rounded-xl p-6 cursor-pointer" data-type="python">
+            <div class="text-center mb-4">
+              <div class="text-4xl mb-2">🌶️</div>
+              <h3 class="text-lg font-bold text-orange-400">Python Flask</h3>
+              <p class="text-sm text-gray-400 mt-1">Flask Application</p>
+            </div>
+            <div class="space-y-2 text-sm">
+              <div class="flex items-center gap-2">
+                <span class="text-green-400">✓</span>
+                <span>Flask framework</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-green-400">✓</span>
+                <span>Templates & Static</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-green-400">✓</span>
+                <span>Production ready</span>
+              </div>
+            </div>
+            <button onclick="selectProjectType('python')" class="w-full mt-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700 transition-all">
+              Select Template
+            </button>
+          </div>
+
+          <!-- PHP Website Card -->
+          <div class="project-card bg-gray-800 rounded-xl p-6 cursor-pointer" data-type="php">
+            <div class="text-center mb-4">
+              <div class="text-4xl mb-2">🐘</div>
+              <h3 class="text-lg font-bold text-purple-400">PHP Website</h3>
+              <p class="text-sm text-gray-400 mt-1">PHP Built-in Server</p>
+            </div>
+            <div class="space-y-2 text-sm">
+              <div class="flex items-center gap-2">
+                <span class="text-green-400">✓</span>
+                <span>PHP built-in server</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-green-400">✓</span>
+                <span>Includes folder</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-green-400">✓</span>
+                <span>Uploads ready</span>
+              </div>
+            </div>
+            <button onclick="selectProjectType('php')" class="w-full mt-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-all">
+              Select Template
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Batch File Generator Section -->
+      <div id="batch-generator" class="bg-gray-900 rounded-xl terminal-border p-6 mb-6 hidden">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2 font-semibold text-purple-400 neon-glow">
+            📁 GENERATE PROJECT .BAT FILE
+          </div>
+          <button onclick="showProjectSelection()" class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600">
+            ← Back to Selection
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Project Configuration -->
+          <div class="space-y-4">
+            <h3 class="text-cyan-400 font-semibold">📋 PROJECT CONFIGURATION</h3>
+            
+            <div>
+              <label class="block text-cyan-400 text-sm mb-2">Project Name</label>
+              <input type="text" id="project-name" placeholder="MyAwesomeProject" 
+                     class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
+            </div>
+
+            <div>
+              <label class="block text-cyan-400 text-sm mb-2">Project Location</label>
+              <div class="flex gap-2">
+                <input type="text" id="project-location" 
+                       value="C:\Users\Jo\OneDrive\Documents\Servidor de Pruebas de Proyectos"
+                       class="flex-1 p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
+                <button onclick="browseProjectLocation()" class="px-4 py-3 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-all">
+                  📁
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-cyan-400 text-sm mb-2">Port Number</label>
+                <input type="number" id="project-port" placeholder="5000" value="5000" min="1" max="65535"
+                       class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
+              </div>
+              <div>
+                <label class="block text-cyan-400 text-sm mb-2">Main File</label>
+                <input type="text" id="project-mainfile" placeholder="index.html" value="index.html"
+                       class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-cyan-400 text-sm mb-2">Project Type</label>
+              <select id="project-type" class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
+                <option value="static">🐍 Static Website</option>
+                <option value="node">⚡ Node.js Application</option>
+                <option value="python">🌶️ Python Flask</option>
+                <option value="php">🐘 PHP Website</option>
+              </select>
+            </div>
+
+            <div class="bg-gray-800 p-4 rounded-lg">
+              <h4 class="text-cyan-400 text-sm mb-3">⚙️ OPTIONS</h4>
+              <div class="space-y-2">
+                <label class="flex items-center gap-2">
+                  <input type="checkbox" id="auto-open-browser" checked class="rounded">
+                  <span class="text-green-400">Auto-open browser after startup</span>
+                </label>
+                <label class="flex items-center gap-2">
+                  <input type="checkbox" id="create-folders" checked class="rounded">
+                  <span class="text-blue-400">Create folder structure in script</span>
+                </label>
+                <label class="flex items-center gap-2">
+                  <input type="checkbox" id="sample-content" checked class="rounded">
+                  <span class="text-purple-400">Include sample file comments</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Preview & Actions -->
+          <div class="space-y-4">
+            <h3 class="text-cyan-400 font-semibold">👁️ PROJECT PREVIEW</h3>
+            
+            <div class="bg-gray-800 p-4 rounded-lg h-48 overflow-y-auto">
+              <div id="project-preview" class="text-sm font-mono text-green-400">
+                <div class="text-gray-400">Configure your project to see preview...</div>
+              </div>
+            </div>
+
+            <div class="bg-yellow-900 border-l-4 border-yellow-500 p-3 rounded">
+              <div class="text-yellow-200 text-sm">
+                <span class="font-bold">💡 What you'll get:</span><br>
+                • Complete batch file for your server<br>
+                • Folder structure creation commands<br>
+                • Auto-browser launch configuration<br>
+                • Professional server management
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mt-4">
+              <button id="btn-create-project" class="py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all">
+                🚀 CREATE .BAT FILE
+              </button>
+              <button id="btn-create-project-bat" class="py-3 bg-gradient-to-r from-purple-600 to-cyan-600 text-white font-bold rounded-lg hover:from-purple-700 hover:to-cyan-700 transition-all">
+                📁 + FOLDERS
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Kill Modal -->
-    <div id="modal" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-50">
-      <div class="bg-gray-900 rounded-lg terminal-border w-full max-w-md">
-        <div class="flex justify-between items-center border-b border-cyan-800 p-4">
-          <h3 class="text-lg font-semibold text-red-400 neon-glow">⚠️ CONFIRM TERMINATION</h3>
-          <button id="modal-close" class="p-1 hover:bg-gray-800 rounded text-white">✖</button>
-        </div>
-        <div class="p-4 text-sm">
-          <p class="text-white mb-4">Terminate process using port <strong id="m-port" class="text-yellow-400">—</strong>?</p>
-          <div class="bg-gray-800 p-3 rounded border border-cyan-800 text-white">
-            <div>Service: <span id="m-service" class="font-medium text-cyan-400">—</span></div>
-            <div>Process: <span id="m-proc" class="font-medium text-cyan-400">—</span></div>
-            <div>PID: <span id="m-pid" class="font-mono text-green-400">—</span></div>
+    <!-- Tab 3: Server Manager -->
+    <div id="tab-servers" class="tab-content hidden">
+      <section class="bg-gray-900 rounded-xl terminal-border p-6 mb-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2 font-semibold text-orange-400 neon-glow">
+            🚀 SERVER MANAGEMENT
           </div>
-          <div class="bg-yellow-900 border-l-4 border-yellow-500 p-3 mt-3 text-yellow-200">
-            ⚠️ <b>Warning:</b> This may affect running applications. Run as Administrator.
+          <div class="text-xs text-cyan-400">
+            Launch and manage local development servers
           </div>
         </div>
-        <div class="flex justify-end gap-2 p-4 border-t border-cyan-800">
-          <button id="modal-cancel" class="px-4 py-2 rounded border border-gray-600 text-white hover:bg-gray-800">CANCEL</button>
-          <button id="modal-confirm" class="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700">TERMINATE</button>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <label class="block text-cyan-400 text-sm mb-2">Server Name</label>
+            <input type="text" id="server-name" placeholder="My API Server" 
+                   class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
+          </div>
+          <div>
+            <label class="block text-cyan-400 text-sm mb-2">Working Directory</label>
+            <input type="text" id="server-cwd" placeholder="C:\projects\my-app" 
+                   class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div>
+            <label class="block text-cyan-400 text-sm mb-2">Port Number</label>
+            <input type="number" id="server-port" placeholder="3000" 
+                   class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
+          </div>
+          <div>
+            <label class="block text-cyan-400 text-sm mb-2">Server Type</label>
+            <select id="server-template" class="w-full p-3 bg-gray-800 border border-cyan-500 text-white rounded-lg focus:outline-none focus:border-cyan-300">
+              <option value="py-http">Python HTTP Server</option>
+              <option value="node-index">Node.js Server</option>
+              <option value="gunicorn-app">Gunicorn App</option>
+              <option value="php-server">PHP Server</option>
+            </select>
+          </div>
+          <div class="flex items-end">
+            <button id="btn-launch" class="w-full px-6 py-3 bg-gradient-to-r from-orange-600 to-red-600 text-white font-bold rounded-lg hover:from-orange-700 hover:to-red-700 transition-all">
+              🚀 LAUNCH SERVER
+            </button>
+          </div>
+        </div>
+
+        <!-- Running Servers -->
+        <div class="mt-6">
+          <h4 class="text-cyan-400 font-semibold mb-3">🏃‍♂️ RUNNING SERVERS</h4>
+          <div id="running-servers" class="space-y-2">
+            <div class="text-center py-4 text-gray-500">
+              No servers running. Launch a server to see it here.
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 4: Quick Launcher -->
+    <div id="tab-quick" class="tab-content hidden">
+      <!-- Quick Server Launcher Section -->
+      <section class="bg-gray-900 rounded-xl terminal-border p-6 mb-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2 font-semibold text-purple-400 neon-glow">
+            ⚡ QUICK SERVER LAUNCHER
+          </div>
+          <div class="text-xs text-cyan-400">
+            One-click server startup with browser auto-launch
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+          <!-- Static Server -->
+          <div class="bg-gray-800 rounded-lg p-4 border border-green-500">
+            <div class="text-center mb-3">
+              <div class="text-3xl mb-2">🐍</div>
+              <h3 class="font-bold text-green-400">Static Server</h3>
+              <p class="text-xs text-gray-400">Python HTTP Server</p>
+            </div>
+            <div class="space-y-2 mb-4">
+              <div>
+                <label class="text-xs text-cyan-400">Port</label>
+                <input type="number" id="quick-static-port" value="8000" class="w-full p-2 bg-gray-700 text-white rounded text-sm">
+              </div>
+              <div>
+                <label class="text-xs text-cyan-400">Directory</label>
+                <input type="text" id="quick-static-dir" value="." class="w-full p-2 bg-gray-700 text-white rounded text-sm">
+              </div>
+            </div>
+            <button onclick="launchQuickServer('static')" class="w-full py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-all text-sm">
+              🚀 Launch + Browser
+            </button>
+          </div>
+
+          <!-- Node.js Server -->
+          <div class="bg-gray-800 rounded-lg p-4 border border-blue-500">
+            <div class="text-center mb-3">
+              <div class="text-3xl mb-2">⚡</div>
+              <h3 class="font-bold text-blue-400">Node.js Server</h3>
+              <p class="text-xs text-gray-400">Express/HTTP Server</p>
+            </div>
+            <div class="space-y-2 mb-4">
+              <div>
+                <label class="text-xs text-cyan-400">Port</label>
+                <input type="number" id="quick-node-port" value="3000" class="w-full p-2 bg-gray-700 text-white rounded text-sm">
+              </div>
+              <div>
+                <label class="text-xs text-cyan-400">App File</label>
+                <input type="text" id="quick-node-file" value="app.js" class="w-full p-2 bg-gray-700 text-white rounded text-sm">
+              </div>
+            </div>
+            <button onclick="launchQuickServer('node')" class="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-all text-sm">
+              🚀 Launch + Browser
+            </button>
+          </div>
+
+          <!-- Python Flask Server -->
+          <div class="bg-gray-800 rounded-lg p-4 border border-orange-500">
+            <div class="text-center mb-3">
+              <div class="text-3xl mb-2">🌶️</div>
+              <h3 class="font-bold text-orange-400">Python Flask</h3>
+              <p class="text-xs text-gray-400">Flask Application</p>
+            </div>
+            <div class="space-y-2 mb-4">
+              <div>
+                <label class="text-xs text-cyan-400">Port</label>
+                <input type="number" id="quick-python-port" value="5000" class="w-full p-2 bg-gray-700 text-white rounded text-sm">
+              </div>
+              <div>
+                <label class="text-xs text-cyan-400">App File</label>
+                <input type="text" id="quick-python-file" value="app.py" class="w-full p-2 bg-gray-700 text-white rounded text-sm">
+              </div>
+            </div>
+            <button onclick="launchQuickServer('python')" class="w-full py-2 bg-orange-600 text-white rounded hover:bg-orange-700 transition-all text-sm">
+              🚀 Launch + Browser
+            </button>
+          </div>
+
+          <!-- PHP Server -->
+          <div class="bg-gray-800 rounded-lg p-4 border border-purple-500">
+            <div class="text-center mb-3">
+              <div class="text-3xl mb-2">🐘</div>
+              <h3 class="font-bold text-purple-400">PHP Server</h3>
+              <p class="text-xs text-gray-400">Built-in PHP Server</p>
+            </div>
+            <div class="space-y-2 mb-4">
+              <div>
+                <label class="text-xs text-cyan-400">Port</label>
+                <input type="number" id="quick-php-port" value="8080" class="w-full p-2 bg-gray-700 text-white rounded text-sm">
+              </div>
+              <div>
+                <label class="text-xs text-cyan-400">Directory</label>
+                <input type="text" id="quick-php-dir" value="." class="w-full p-2 bg-gray-700 text-white rounded text-sm">
+              </div>
+            </div>
+            <button onclick="launchQuickServer('php')" class="w-full py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-all text-sm">
+              🚀 Launch + Browser
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Multi-Server Batch Creator -->
+      <section class="bg-gray-900 rounded-xl terminal-border p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2 font-semibold text-cyan-400 neon-glow">
+            🔄 MULTI-SERVER BATCH CREATOR
+          </div>
+          <div class="text-xs text-cyan-400">
+            Create batch files to start multiple servers at once
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label class="block text-cyan-400 text-sm mb-2">Batch File Name</label>
+            <input type="text" id="multi-batch-name" value="start_all_servers" 
+                   class="w-full p-2 bg-gray-700 text-white rounded">
+          </div>
+          <div>
+            <label class="block text-cyan-400 text-sm mb-2">Open Browser Tabs</label>
+            <select id="multi-batch-browser" class="w-full p-2 bg-gray-700 text-white rounded">
+              <option value="yes">Yes, open all browser tabs</option>
+              <option value="no">No, just start servers</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-cyan-400 text-sm mb-2">Servers to Include:</label>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <label class="flex items-center gap-2">
+              <input type="checkbox" id="include-static" checked class="rounded">
+              <span class="text-green-400">🐍 Static Server (Port 8000)</span>
+            </label>
+            <label class="flex items-center gap-2">
+              <input type="checkbox" id="include-node" checked class="rounded">
+              <span class="text-blue-400">⚡ Node.js Server (Port 3000)</span>
+            </label>
+            <label class="flex items-center gap-2">
+              <input type="checkbox" id="include-python" checked class="rounded">
+              <span class="text-orange-400">🌶️ Python Flask (Port 5000)</span>
+            </label>
+            <label class="flex items-center gap-2">
+              <input type="checkbox" id="include-php" checked class="rounded">
+              <span class="text-purple-400">🐘 PHP Server (Port 8080)</span>
+            </label>
+          </div>
+        </div>
+        
+        <button onclick="createMultiServerBatch()" class="w-full py-3 bg-gradient-to-r from-purple-600 to-cyan-600 text-white font-bold rounded-lg hover:from-purple-700 hover:to-cyan-700 transition-all">
+          📥 DOWNLOAD MULTI-SERVER BATCH FILE
+        </button>
+      </section>
+    </div>
+
+    <!-- Tab 5: System Monitor -->
+    <div id="tab-system" class="tab-content hidden">
+      <section class="bg-gray-900 rounded-xl terminal-border p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2 font-semibold text-blue-400 neon-glow">
+            📊 SYSTEM MONITOR
+          </div>
+          <div class="text-xs text-cyan-400">
+            Real-time system performance metrics
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div class="stats-card rounded-xl p-4">
+            <div class="flex items-center justify-between mb-3">
+              <div class="text-xl">💻</div>
+              <div class="bg-blue-900 px-2 py-1 rounded-full text-xs text-blue-400">
+                CPU
+              </div>
+            </div>
+            <div class="text-sm text-cyan-400 mb-1">PROCESSOR USAGE</div>
+            <div class="text-2xl font-bold text-yellow-400" id="cpu-usage">0%</div>
+            <div class="mt-3 bg-gray-800 rounded-full h-2">
+              <div class="bg-blue-500 h-2 rounded-full progress-bar" id="cpu-bar" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <div class="stats-card rounded-xl p-4">
+            <div class="flex items-center justify-between mb-3">
+              <div class="text-xl">🧠</div>
+              <div class="bg-purple-900 px-2 py-1 rounded-full text-xs text-purple-400">
+                Memory
+              </div>
+            </div>
+            <div class="text-sm text-cyan-400 mb-1">MEMORY USAGE</div>
+            <div class="text-2xl font-bold text-yellow-400" id="memory-usage">0%</div>
+            <div class="mt-3 bg-gray-800 rounded-full h-2">
+              <div class="bg-purple-500 h-2 rounded-full progress-bar" id="memory-bar" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <div class="stats-card rounded-xl p-4">
+            <div class="flex items-center justify-between mb-3">
+              <div class="text-xl">🔍</div>
+              <div class="bg-green-900 px-2 py-1 rounded-full text-xs text-green-400">
+                Network
+              </div>
+            </div>
+            <div class="text-sm text-cyan-400 mb-1">ACTIVE PORTS</div>
+            <div class="text-2xl font-bold text-yellow-400" id="active-ports-count">0</div>
+            <div class="text-xs text-gray-400 mt-2">TCP connections</div>
+          </div>
+        </div>
+
+        <button onclick="refreshSystemStats()" class="w-full px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold rounded-lg hover:from-cyan-700 hover:to-blue-700 transition-all">
+          🔄 REFRESH STATS
+        </button>
+      </section>
+    </div>
+
+    <!-- Download Success Message -->
+    <div id="download-success" class="hidden bg-green-900 rounded-xl terminal-border p-6 mb-6">
+      <div class="flex items-center justify-between">
+        <h3 class="text-green-400 font-semibold text-lg">✅ BATCH FILE DOWNLOADED!</h3>
+        <button onclick="closeSuccess()" class="px-4 py-2 bg-green-700 text-white rounded hover:bg-green-600">Close</button>
+      </div>
+      <div class="mt-4 text-sm text-cyan-400">
+        <p>📁 File: <span id="download-filename" class="text-yellow-400">start_server.bat</span></p>
+        <p>📍 Save it in your project directory and double-click to run!</p>
+        <div class="mt-3 p-3 bg-green-800 rounded-lg">
+          <p class="text-yellow-300 text-sm">🚀 <b>What happens when you run it:</b></p>
+          <ul class="text-cyan-300 text-sm mt-2 list-disc list-inside">
+            <li>Starts your chosen server type automatically</li>
+            <li>Creates folder structure (if enabled)</li>
+            <li>Opens browser to your local development server</li>
+            <li>Shows real-time server status in command window</li>
+          </ul>
         </div>
       </div>
     </div>
 
     <!-- Footer -->
-    <div class="mt-6 text-xs text-center text-gray-500">
-      Port Scanner & Server Manager • Backend: <code class="text-red-400">server.py</code> • Run with Admin privileges for full functionality
+    <div class="mt-8 text-xs text-center text-gray-500">
+      DevSuite • Professional Developer Tools • 
+      <a href="#" class="text-cyan-400 hover:text-cyan-300">Backend: Real System Integration</a> • 
+      <a href="#" class="text-blue-400 hover:text-blue-300">Frontend: Modern Web Stack</a>
     </div>
   </div>
 
-  <!-- Single, unified script -->
+  <!-- JavaScript -->
   <script>
-    // ============ GITHUB STATS TRACKING SYSTEM ============
-    const GITHUB_REPO = 'BikerProDeveloper/Port-Scanner-Manager';
-    const STATS_FILE_PATH = 'stats/data.json';
-    
-    // GitHub API configuration
-    const githubAPI = {
-      baseURL: 'https://api.github.com/repos',
-      
-      async request(endpoint, options = {}) {
-        const url = `${this.baseURL}/${GITHUB_REPO}/${endpoint}`;
-        const headers = {
-          'Accept': 'application/vnd.github.v3+json',
-          ...options.headers
-        };
-        
-        try {
-          const response = await fetch(url, { ...options, headers });
-          if (!response.ok) throw new Error(`GitHub API: ${response.status}`);
-          return await response.json();
-        } catch (error) {
-          console.warn('GitHub API error:', error);
-          return null;
-        }
-      },
-      
-      async getStats() {
-        const data = await this.request(`contents/${STATS_FILE_PATH}`);
-        if (!data || !data.content) return this.getDefaultStats();
-        
-        try {
-          const content = atob(data.content.replace(/\n/g, ''));
-          return JSON.parse(content);
-        } catch (e) {
-          console.warn('Error parsing stats:', e);
-          return this.getDefaultStats();
-        }
-      },
-      
-      async saveStats(stats) {
-        const existing = await this.request(`contents/${STATS_FILE_PATH}`);
-        const content = btoa(JSON.stringify(stats, null, 2));
-        
-        return await this.request(`contents/${STATS_FILE_PATH}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            message: `📊 Update stats: ${stats.total_bats_created} total .bats`,
-            content: content,
-            sha: existing?.sha
-          })
-        });
-      },
-      
-      getDefaultStats() {
-        return {
-          total_bats_created: 0,
-          today_bats: 0,
-          today_date: new Date().toISOString().split('T')[0],
-          project_types: { static: 0, node: 0, python: 0, php: 0 },
-          weekly_stats: { current_week: 0, last_week: 0 },
-          milestones: [
-            { count: 100, badge: "🚀 Primeros 100", icon: "🚀", achieved: false },
-            { count: 500, badge: "🔥 500 .bats", icon: "🔥", achieved: false },
-            { count: 1000, badge: "🎯 1K Proyectos", icon: "🎯", achieved: false }
-          ]
-        };
-      }
-    };
+    // ============ CONFIGURATION ============
+    const BACKEND_URL = 'http://localhost:5000'; // Update with your backend URL
 
-    // Enhanced Stats Manager with UI updates for new section
-    const StatsManager = {
-      currentStats: null,
-      
-      async init() {
-        this.currentStats = await githubAPI.getStats();
-        this.checkDateReset();
-        this.updateStatsUI();
-        this.startAutoRefresh();
-      },
-      
-      checkDateReset() {
-        const today = new Date().toISOString().split('T')[0];
-        if (this.currentStats.today_date !== today) {
-          this.currentStats.today_date = today;
-          this.currentStats.today_bats = 0;
-          this.saveStats();
-        }
-      },
-      
-      async trackBatCreation(projectType) {
-        this.currentStats.total_bats_created++;
-        this.currentStats.today_bats++;
-        this.currentStats.project_types[projectType]++;
-        this.currentStats.weekly_stats.current_week++;
-        
-        await this.saveStats();
-        this.updateStatsUI();
-        this.checkMilestones();
-        
-        return this.currentStats;
-      },
-      
-      async saveStats() {
-        await githubAPI.saveStats(this.currentStats);
-      },
-      
-      updateStatsUI() {
-        const stats = this.currentStats;
-        if (!stats) return;
-        
-        // Update main counters with animations
-        this.animateCounter('total-bats', stats.total_bats_created);
-        document.getElementById('today-bats').textContent = stats.today_bats;
-        document.getElementById('community-count').textContent = stats.total_bats_created;
-        document.getElementById('total-developers').textContent = stats.total_bats_created;
-        
-        // Update today's growth indicator
-        document.getElementById('today-growth').textContent = `+${stats.today_bats}`;
-        
-        // Update current date
-        document.getElementById('current-date').textContent = new Date().toLocaleDateString();
-        
-        // Update project type counts and percentages
-        this.updateProjectDistribution(stats);
-        
-        // Update progress and milestones
-        this.updateProgressBar(stats);
-        this.updateMilestoneBadge(stats);
-        
-        // Update last updated time
-        document.getElementById('stats-updated').textContent = 'just now';
-        
-        // Simulate some additional metrics (these would come from your backend)
-        this.updateSimulatedMetrics(stats);
-      },
-      
-      updateProjectDistribution(stats) {
-        const total = stats.total_bats_created || 1; // Avoid division by zero
-        
-        const types = ['static', 'node', 'python', 'php'];
-        const colors = {
-          static: { bg: 'bg-green-500', text: 'text-green-400' },
-          node: { bg: 'bg-blue-500', text: 'text-blue-400' },
-          python: { bg: 'bg-orange-500', text: 'text-orange-400' },
-          php: { bg: 'bg-purple-500', text: 'text-purple-400' }
-        };
-        
-        types.forEach(type => {
-          const count = stats.project_types[type] || 0;
-          const percent = total > 0 ? Math.round((count / total) * 100) : 0;
-          
-          // Update counts
-          document.getElementById(`${type}-count`).textContent = `${count} projects`;
-          document.getElementById(`card-${type}`).textContent = `${count} projects`;
-          
-          // Update percentages
-          document.getElementById(`${type}-percent`).textContent = `${percent}%`;
-          
-          // Update progress bars
-          const bar = document.getElementById(`${type}-bar`);
-          if (bar) {
-            setTimeout(() => {
-              bar.style.width = `${percent}%`;
-            }, 100);
-          }
-        });
-      },
-      
-      updateProgressBar(stats) {
-        const nextMilestone = stats.milestones.find(m => !m.achieved) || { count: 100 };
-        const progress = Math.min((stats.total_bats_created / nextMilestone.count) * 100, 100);
-        
-        const progressBar = document.getElementById('milestone-progress');
-        if (progressBar) {
-          setTimeout(() => {
-            progressBar.style.width = `${progress}%`;
-          }, 100);
-        }
-        
-        document.getElementById('next-milestone').textContent = nextMilestone.count;
-        document.getElementById('next-milestone-text').textContent = `Next: ${nextMilestone.count}`;
-      },
-      
-      updateMilestoneBadge(stats) {
-        const achieved = stats.milestones.filter(m => m.achieved);
-        const badge = document.getElementById('achievement-badge');
-        
-        if (achieved.length > 0) {
-          const latest = achieved[achieved.length - 1];
-          document.getElementById('badge-icon').textContent = latest.icon;
-          document.getElementById('badge-text').textContent = latest.badge;
-          badge.classList.remove('hidden');
-        } else {
-          badge.classList.add('hidden');
-        }
-      },
-      
-      updateSimulatedMetrics(stats) {
-        // Simulate online users (1-15 random)
-        const onlineUsers = Math.max(1, Math.min(15, Math.floor(stats.total_bats_created / 100) + 1));
-        document.getElementById('online-now').textContent = onlineUsers;
-        document.getElementById('active-users').textContent = onlineUsers;
-        
-        // Simulate weekly growth
-        const weeklyGrowth = Math.floor(stats.weekly_stats.current_week / 7);
-        document.getElementById('weekly-growth').textContent = `+${weeklyGrowth}`;
-        
-        // Simulate total downloads (slightly higher than .bats created)
-        const totalDownloads = stats.total_bats_created + Math.floor(stats.total_bats_created * 0.3);
-        document.getElementById('total-downloads').textContent = totalDownloads;
-      },
-      
-      animateCounter(elementId, newValue) {
-        const element = document.getElementById(elementId);
-        const oldValue = parseInt(element.textContent.replace(/,/g, '')) || 0;
-        
-        if (oldValue !== newValue) {
-          element.classList.add('counter-animation');
-          element.textContent = newValue.toLocaleString();
-          setTimeout(() => element.classList.remove('counter-animation'), 2000);
-        }
-      },
-      
-      checkMilestones() {
-        const stats = this.currentStats;
-        let celebration = false;
-        
-        stats.milestones.forEach(milestone => {
-          if (!milestone.achieved && stats.total_bats_created >= milestone.count) {
-            milestone.achieved = true;
-            celebration = true;
-            this.showCelebration(milestone.badge, milestone.icon);
-          }
-        });
-        
-        if (celebration) {
-          this.saveStats();
-        }
-      },
-      
-      showCelebration(badge, icon) {
-        const successBox = document.getElementById('success');
-        successBox.innerHTML = `🎉 <strong>COMMUNITY MILESTONE UNLOCKED!</strong> ${icon} ${badge}`;
-        successBox.classList.remove('hidden');
-        successBox.classList.add('celebrate');
-        
-        // Also trigger confetti or other celebration effects
-        this.triggerCelebrationEffect();
-        
-        setTimeout(() => {
-          successBox.classList.add('hidden');
-          successBox.classList.remove('celebrate');
-        }, 5000);
-      },
-      
-      triggerCelebrationEffect() {
-        // Simple celebration effect - you can enhance this with confetti.js
-        const liveBadge = document.getElementById('live-badge');
-        liveBadge.classList.add('celebrate');
-        setTimeout(() => liveBadge.classList.remove('celebrate'), 2000);
-      },
-      
-      startAutoRefresh() {
-        // Refresh stats every 30 seconds
-        setInterval(async () => {
-          const newStats = await githubAPI.getStats();
-          if (newStats && newStats.total_bats_created !== this.currentStats.total_bats_created) {
-            this.currentStats = newStats;
-            this.updateStatsUI();
-          }
-        }, 30000);
-      }
-    };
-
-    // Global functions for button actions
-    function refreshStats() {
-      StatsManager.init();
-      const btn = event.target;
-      btn.textContent = '🔄 Refreshing...';
-      setTimeout(() => {
-        btn.textContent = '🔄 Refresh Stats';
-      }, 1000);
+    // ============ TAB MANAGEMENT ============
+    function showTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.add('hidden');
+      });
+      document.querySelectorAll('.tab-button').forEach(button => {
+        button.classList.remove('active');
+      });
+      document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+      document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
     }
 
-    function shareStats() {
-      const stats = StatsManager.currentStats;
-      const text = `🚀 Just created my .bat file with Port Scanner Manager! \n\n` +
-                  `We're now at ${stats.total_bats_created} total projects created! \n\n` +
-                  `Join the community: [Your App URL]`;
-      
-      if (navigator.share) {
-        navigator.share({
-          title: 'Port Scanner Manager Stats',
-          text: text,
-          url: window.location.href
-        });
-      } else {
-        // Fallback: copy to clipboard
-        navigator.clipboard.writeText(text).then(() => {
-          const successBox = document.getElementById('success');
-          successBox.textContent = '📋 Stats copied to clipboard!';
-          successBox.classList.remove('hidden');
-          setTimeout(() => successBox.classList.add('hidden'), 3000);
-        });
-      }
-    }
+    document.querySelectorAll('.tab-button').forEach(button => {
+      button.addEventListener('click', function() {
+        showTab(this.dataset.tab);
+      });
+    });
 
-    // ============ EXISTING APPLICATION CODE ============
+    // ============ UTILITY FUNCTIONS ============
     const errBox = document.getElementById("error");
     const successBox = document.getElementById("success");
-    function showError(msg){ errBox.textContent = msg; errBox.classList.remove("hidden"); }
-    function showSuccess(msg){ successBox.textContent = msg; successBox.classList.remove("hidden"); }
-    function clearMessages(){ errBox.classList.add("hidden"); successBox.classList.add("hidden"); }
+    
+    function showError(msg){ 
+        errBox.innerHTML = msg; 
+        errBox.classList.remove("hidden"); 
+        setTimeout(() => errBox.classList.add("hidden"), 5000);
+    }
+    
+    function showSuccess(msg){ 
+        successBox.innerHTML = msg; 
+        successBox.classList.remove("hidden"); 
+        setTimeout(() => successBox.classList.add("hidden"), 5000);
+    }
 
-    const Settings = {
-      get base(){ return localStorage.getItem('PSM_API_BASE') || 'http://127.0.0.1:5502'; },
-      set base(v){ localStorage.setItem('PSM_API_BASE', v); },
-      get token(){ return localStorage.getItem('PSM_API_TOKEN') || (new URLSearchParams(location.search).get('token') || ''); },
-      set token(v){ localStorage.setItem('PSM_API_TOKEN', v); }
-    };
+    function downloadBatchFile(content, filename) {
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 100);
+    }
 
-    async function apiFetch(path, {method='GET', headers={}, body, timeoutMs=10000} = {}) {
-      const base = Settings.base.replace(/\/$/, '');
-      const url = (typeof path === 'string' && path.startsWith('http')) ? path : (base + path);
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(new DOMException('timeout','AbortError')), timeoutMs);
+    function closeSuccess() {
+      document.getElementById('download-success').classList.add('hidden');
+    }
 
+    function browseProjectLocation() {
+      const currentLocation = document.getElementById('project-location').value;
+      const newLocation = prompt('Enter project location:', currentLocation);
+      if (newLocation) {
+        document.getElementById('project-location').value = newLocation;
+        updateProjectPreview();
+      }
+    }
+
+    // ============ BACKEND API FUNCTIONS ============
+    async function apiCall(endpoint, method = 'GET', data = null) {
       try {
-        const res = await fetch(url, {
-          method,
+        const options = {
+          method: method,
           headers: {
             'Content-Type': 'application/json',
-            ...(Settings.token ? {'X-PSM-Token': Settings.token} : {}),
-            ...headers
           },
-          body,
-          signal: controller.signal
-        });
-        const raw = await res.text();
-        let data = raw ? JSON.parse(raw) : {};
-        if (!res.ok || data.ok === false) throw new Error(data.error || `HTTP ${res.status} — ${raw}`);
-        return data;
-      } catch (e) {
-        if (e.name === 'AbortError') throw new Error(`Request timeout after ${Math.round(timeoutMs/1000)}s`);
-        throw e;
-      } finally { clearTimeout(timeout); }
-    }
-
-    // Initialize stats system when page loads
-    document.addEventListener('DOMContentLoaded', async () => {
-      await StatsManager.init();
-    });
-
-    // ============ WIRE SETTINGS UI ============
-    const inputBase = document.getElementById('api-base');
-    const inputToken = document.getElementById('api-token');
-    const btnSave = document.getElementById('btn-save-settings');
-    const btnTest = document.getElementById('btn-test');
-
-    inputBase.value = Settings.base;
-    inputToken.value = Settings.token;
-
-    btnSave.onclick = () => {
-      Settings.base = inputBase.value.trim();
-      Settings.token = inputToken.value;
-      clearMessages();
-      showSuccess(`✅ Saved. Base: ${Settings.base}${Settings.token ? " · Token set" : ""}`);
-      setTimeout(clearMessages, 2000);
-    };
-
-    btnTest.onclick = async () => {
-      clearMessages();
-      try {
-        const health = await apiFetch('/health').catch(() => null);
-        const info = health || await apiFetch('/api/servers/list').catch(()=>({ok:true, servers:[]}));
-        showSuccess(`✅ Connected to ${Settings.base}`);
-        setTimeout(clearMessages, 2000);
-      } catch (e) {
-        showError(`❌ Cannot reach ${Settings.base}: ${e.message}`);
-      }
-    };
-
-    window.addEventListener('keydown', (e) => {
-      if (e.key.toLowerCase() === 's' && !['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) {
-        inputBase.focus();
-        inputBase.select();
-        e.preventDefault();
-      }
-    });
-
-    // ============ DOM ELEMENTS ============
-    const btnScan = document.getElementById("btn-scan");
-    const btnLaunch = document.getElementById("btn-launch");
-    const spin = document.getElementById("scan-spinner");
-    const rows = document.getElementById("rows");
-    const serverRows = document.getElementById("server-rows");
-    const empty = document.getElementById("empty");
-    const wrap = document.getElementById("table-wrap");
-
-    const statTCP = document.getElementById("stat-tcp");
-    const statUDP = document.getElementById("stat-udp");
-    const statTotal = document.getElementById("stat-total");
-    const statServers = document.getElementById("stat-servers");
-    const statTime = document.getElementById("stat-time");
-
-    const serverName = document.getElementById("server-name");
-    const serverCwd = document.getElementById("server-cwd");
-    const serverPort = document.getElementById("server-port");
-    const serverTemplate = document.getElementById("server-template");
-    const serverHtml = document.getElementById("server-html");
-
-    const modal = document.getElementById("modal");
-    const mPort = document.getElementById("m-port");
-    const mService = document.getElementById("m-service");
-    const mProc = document.getElementById("m-proc");
-    const mPid = document.getElementById("m-pid");
-    const btnModalCancel = document.getElementById("modal-cancel");
-    const btnModalClose = document.getElementById("modal-close");
-    const btnModalConfirm = document.getElementById("modal-confirm");
-    let modalData = null;
-
-    // ============ PROJECT SELECTION ELEMENTS ============
-    const projectSelection = document.querySelector('.bg-gray-900.rounded-xl.terminal-border.p-6.mb-6');
-    const batchGenerator = document.getElementById('batch-generator');
-    const projectCards = document.querySelectorAll('.project-card');
-    const btnBackToSelection = document.getElementById('btn-back-to-selection');
-    const structurePreview = document.getElementById('structure-preview');
-
-    // ============ BATCH FILE GENERATOR ELEMENTS ============
-    const projectName = document.getElementById('project-name');
-    const projectType = document.getElementById('project-type');
-    const projectDir = document.getElementById('project-dir');
-    const projectPort = document.getElementById('project-port');
-    const projectHtml = document.getElementById('project-html');
-    const btnGenerateBatch = document.getElementById('btn-generate-batch');
-    const btnCancelBatch = document.getElementById('btn-cancel-batch');
-    const downloadSuccess = document.getElementById('download-success');
-    const downloadFilename = document.getElementById('download-filename');
-    const btnCloseSuccess = document.getElementById('btn-close-success');
-
-    // Project structure templates
-    const structureTemplates = {
-      static: `📁 MiSitioWeb/
- ├── 📄 index.html
- ├── 🎨 css/
- │   └── style.css
- ├── ⚡ js/
- │   └── script.js
- ├── 🖼️ images/
- └── 🔧 start_server.bat`,
-
-      node: `📁 MiAppWeb/
- ├── 📦 package.json
- ├── 🖥️ server.js
- ├── 🌐 public/
- │   ├── index.html
- │   ├── css/style.css
- │   └── js/app.js
- ├── 📊 src/
- │   └── routes.js
- └── 🔧 start_server.bat`,
-
-      python: `📁 MiAppPython/
- ├── 🐍 app.py
- ├── 📋 requirements.txt
- ├── 🎨 templates/
- │   └── index.html
- ├── 🎨 static/
- │   ├── css/style.css
- │   └── js/script.js
- ├── ⚙️ config.py
- └── 🔧 start_server.bat`,
-
-      php: `📁 MiSitioPHP/
- ├── 📄 index.php
- ├── 🎨 css/style.css
- ├── ⚡ js/script.js
- ├── 📁 includes/
- │   └── functions.php
- ├── 📁 uploads/
- └── 🔧 start_server.bat`
-    };
-
-    // Enhanced Batch file templates
-    const batchTemplates = {
-      static: (name, dir, defaultPort, htmlFile) => `@echo off
-chcp 65001 >nul
-title ${name} - Static Website
-echo ===============================
-echo    Starting ${name}
-echo ===============================
-echo.
-
-REM Set colors for better UX
-color 0A
-
-REM Check if Python is available
-python --version >nul 2>&1
-if %errorlevel% neq 0 (
-    echo ❌ ERROR: Python is not installed or not in PATH
-    echo Please install Python from https://python.org
-    pause
-    exit /b 1
-)
-
-REM Interactive port selection
-set /p "PORT=Enter port number [${defaultPort}]: "
-if "%PORT%"=="" set PORT=${defaultPort}
-
-REM Validate port is a number
-echo %PORT%| findstr /r "^[0-9][0-9]*$" >nul
-if %errorlevel% neq 0 (
-    echo ❌ ERROR: '%PORT%' is not a valid port number
-    pause
-    exit /b 1
-)
-
-REM Check if port is in valid range
-if %PORT% lss 1 (
-    echo ❌ ERROR: Port must be greater than 0
-    pause
-    exit /b 1
-)
-if %PORT% gtr 65535 (
-    echo ❌ ERROR: Port must be less than 65536
-    pause
-    exit /b 1
-)
-
-REM Create project directory
-if not exist "${dir}" (
-    echo Creating project directory...
-    mkdir "${dir}"
-)
-cd /d "${dir}"
-
-REM Create proper HTML structure with CSS and JS
-echo Creating project files...
-echo ^<!DOCTYPE html^> > ${htmlFile}
-echo ^<html lang="en"^> >> ${htmlFile}
-echo ^<head^> >> ${htmlFile}
-echo   ^<meta charset="UTF-8"^> >> ${htmlFile}
-echo   ^<meta name="viewport" content="width=device-width, initial-scale=1.0"^> >> ${htmlFile}
-echo   ^<title^>${name}^</title^> >> ${htmlFile}
-echo   ^<link rel="stylesheet" href="css/style.css"^> >> ${htmlFile}
-echo ^</head^> >> ${htmlFile}
-echo ^<body^> >> ${htmlFile}
-echo   ^<div class="container"^> >> ${htmlFile}
-echo     ^<header class="header"^> >> ${htmlFile}
-echo       ^<h1^>🚀 Welcome to ${name}^</h1^> >> ${htmlFile}
-echo     ^</header^> >> ${htmlFile}
-echo     ^<main class="main"^> >> ${htmlFile}
-echo       ^<p^>Your static website is running successfully!^</p^> >> ${htmlFile}
-echo       ^<p^>Server: http://localhost:%PORT%^</p^> >> ${htmlFile}
-echo       ^<div class="features"^> >> ${htmlFile}
-echo         ^<h2^>Features:^</h2^> >> ${htmlFile}
-echo         ^<ul^> >> ${htmlFile}
-echo           ^<li^>Static HTML Website^</li^> >> ${htmlFile}
-echo           ^<li^>CSS Styling^</li^> >> ${htmlFile}
-echo           ^<li^>JavaScript Support^</li^> >> ${htmlFile}
-echo         ^</ul^> >> ${htmlFile}
-echo       ^</div^> >> ${htmlFile}
-echo     ^</main^> >> ${htmlFile}
-echo   ^</div^> >> ${htmlFile}
-echo   ^<script src="js/script.js"^>^</script^> >> ${htmlFile}
-echo ^</body^> >> ${htmlFile}
-echo ^</html^> >> ${htmlFile}
-
-REM Create CSS directory and basic styles
-if not exist "css" mkdir "css"
-echo /* ${name} - Main Styles */ > css/style.css
-echo body { >> css/style.css
-echo   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; >> css/style.css
-echo   margin: 0; >> css/style.css
-echo   padding: 0; >> css/style.css
-echo   background: linear-gradient(135deg, #1a1a2e 0%%, #16213e 100%%); >> css/style.css
-echo   color: white; >> css/style.css
-echo   min-height: 100vh; >> css/style.css
-echo } >> css/style.css
-echo .header { >> css/style.css
-echo   background: rgba(0, 122, 204, 0.9); >> css/style.css
-echo   color: white; >> css/style.css
-echo   padding: 2rem; >> css/style.css
-echo   text-align: center; >> css/style.css
-echo   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); >> css/style.css
-echo } >> css/style.css
-echo .container { >> css/style.css
-echo   max-width: 1200px; >> css/style.css
-echo   margin: 0 auto; >> css/style.css
-echo   padding: 2rem; >> css/style.css
-echo } >> css/style.css
-echo .features { >> css/style.css
-echo   background: rgba(255, 255, 255, 0.1); >> css/style.css
-echo   padding: 1.5rem; >> css/style.css
-echo   border-radius: 8px; >> css/style.css
-echo   margin-top: 2rem; >> css/style.css
-echo } >> css/style.css
-
-REM Create JS directory and basic scripts
-if not exist "js" mkdir "js"
-echo // ${name} - Main JavaScript > js/script.js
-echo console.log('${name} JavaScript loaded successfully!'); >> js/script.js
-echo document.addEventListener('DOMContentLoaded', function() { >> js/script.js
-echo   console.log('${name} is running on port %PORT%'); >> js/script.js
-echo   // Add interactive features here >> js/script.js
-echo }); >> js/script.js
-
-echo.
-echo ✅ Project structure created successfully!
-echo Starting web server on port %PORT%...
-timeout /t 2 /nobreak >nul
-
-REM Start Python HTTP server in a new window and keep it running
-echo Starting server process...
-start "Server - ${name}" cmd /k "python -m http.server %PORT% && pause"
-
-REM Wait a moment for server to start
-timeout /t 3 /nobreak >nul
-
-REM Open browser
-echo Opening browser...
-start http://localhost:%PORT%/
-
-echo.
-echo 🎉 SERVER IS RUNNING!
-echo 📍 Your app: http://localhost:%PORT%
-echo 🖥️  Server running in new window
-echo 🛑 Close server window to stop the server
-echo.
-pause`,
-
-      node: (name, dir, defaultPort, htmlFile) => `@echo off
-chcp 65001 >nul
-title ${name} - Node.js App
-echo ===============================
-echo    Starting ${name}
-echo ===============================
-echo.
-
-REM Set colors for better UX
-color 0A
-
-REM Check if Node.js is available
-node --version >nul 2>&1
-if %errorlevel% neq 0 (
-    echo ❌ ERROR: Node.js is not installed or not in PATH
-    echo Please install Node.js from https://nodejs.org
-    pause
-    exit /b 1
-)
-
-REM Interactive port selection
-set /p "PORT=Enter port number [${defaultPort}]: "
-if "%PORT%"=="" set PORT=${defaultPort}
-
-REM Validate port is a number
-echo %PORT%| findstr /r "^[0-9][0-9]*$" >nul
-if %errorlevel% neq 0 (
-    echo ❌ ERROR: '%PORT%' is not a valid port number
-    pause
-    exit /b 1
-)
-
-REM Check if port is in valid range
-if %PORT% lss 1 (
-    echo ❌ ERROR: Port must be greater than 0
-    pause
-    exit /b 1
-)
-if %PORT% gtr 65535 (
-    echo ❌ ERROR: Port must be less than 65536
-    pause
-    exit /b 1
-)
-
-REM Create project directory
-if not exist "${dir}" (
-    echo Creating project directory...
-    mkdir "${dir}"
-)
-cd /d "${dir}"
-
-echo Creating Node.js application...
-
-REM Create package.json
-echo { > package.json
-echo   "name": "${name.toLowerCase().replace(/ /g, '-')}", >> package.json
-echo   "version": "1.0.0", >> package.json
-echo   "description": "${name} - Node.js Application", >> package.json
-echo   "main": "server.js", >> package.json
-echo   "scripts": { >> package.json
-echo     "start": "node server.js", >> package.json
-echo     "dev": "node server.js" >> package.json
-echo   }, >> package.json
-echo   "dependencies": { >> package.json
-echo     "express": "^4.18.0" >> package.json
-echo   }, >> package.json
-echo   "keywords": ["${name}", "web", "server"], >> package.json
-echo   "author": "Developer", >> package.json
-echo   "license": "MIT" >> package.json
-echo } >> package.json
-
-REM Create Node.js server file
-echo const express = require('express'); > server.js
-echo const path = require('path'); >> server.js
-echo const app = express(); >> server.js
-echo const PORT = process.env.PORT || %PORT%; >> server.js
-echo. >> server.js
-echo // Serve static files from public directory >> server.js
-echo app.use(express.static(path.join(__dirname, 'public'))); >> server.js
-echo. >> server.js
-echo // API routes >> server.js
-echo app.get('/api/info', (req, res) => { >> server.js
-echo   res.json({ >> server.js
-echo     name: '${name}', >> server.js
-echo     version: '1.0.0', >> server.js
-echo     port: PORT, >> server.js
-echo     timestamp: new Date().toISOString() >> server.js
-echo   }); >> server.js
-echo }); >> server.js
-echo. >> server.js
-echo // Main route >> server.js
-echo app.get('/', (req, res) => { >> server.js
-echo   res.send(\` >> server.js
-echo     ^<!DOCTYPE html^> >> server.js
-echo     ^<html^> >> server.js
-echo       ^<head^> >> server.js
-echo         ^<title^>${name}^</title^> >> server.js
-echo         ^<meta charset="UTF-8"^> >> server.js
-echo         ^<meta name="viewport" content="width=device-width, initial-scale=1.0"^> >> server.js
-echo         ^<style^> >> server.js
-echo           body { >> server.js
-echo             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; >> server.js
-echo             margin: 0; >> server.js
-echo             padding: 0; >> server.js
-echo             background: linear-gradient(135deg, #1a1a2e 0%%, #16213e 100%%); >> server.js
-echo             color: white; >> server.js
-echo             min-height: 100vh; >> server.js
-echo           } >> server.js
-echo           .container { >> server.js
-echo             max-width: 1200px; >> server.js
-echo             margin: 0 auto; >> server.js
-echo             padding: 2rem; >> server.js
-echo           } >> server.js
-echo           .header { >> server.js
-echo             background: rgba(0, 122, 204, 0.9); >> server.js
-echo             color: white; >> server.js
-echo             padding: 2rem; >> server.js
-echo             text-align: center; >> server.js
-echo             border-radius: 8px; >> server.js
-echo             margin-bottom: 2rem; >> server.js
-echo           } >> server.js
-echo           .features { >> server.js
-echo             background: rgba(255, 255, 255, 0.1); >> server.js
-echo             padding: 1.5rem; >> server.js
-echo             border-radius: 8px; >> server.js
-echo           } >> server.js
-echo         ^</style^> >> server.js
-echo       ^</head^> >> server.js
-echo       ^<body^> >> server.js
-echo         ^<div class="container"^> >> server.js
-echo           ^<div class="header"^> >> server.js
-echo             ^<h1^>🚀 ${name} - Node.js App^</h1^> >> server.js
-echo             ^<p^>Running on Express server!^</p^> >> server.js
-echo           ^</div^> >> server.js
-echo           ^<div class="features"^> >> server.js
-echo             ^<h2^>Server Information:^</h2^> >> server.js
-echo             ^<p^>Port: \${PORT}^</p^> >> server.js
-echo             ^<p^>Environment: \${process.env.NODE_ENV || 'development'}^</p^> >> server.js
-echo             ^<button onclick="fetchInfo()"^>Get API Info^</button^> >> server.js
-echo             ^<div id="api-info"^>^</div^> >> server.js
-echo           ^</div^> >> server.js
-echo         ^</div^> >> server.js
-echo         ^<script^> >> server.js
-echo           async function fetchInfo() { >> server.js
-echo             const response = await fetch('/api/info'); >> server.js
-echo             const data = await response.json(); >> server.js
-echo             document.getElementById('api-info').innerHTML = '^<pre^>' + JSON.stringify(data, null, 2) + '^</pre^>'; >> server.js
-echo           } >> server.js
-echo         ^</script^> >> server.js
-echo       ^</body^> >> server.js
-echo     ^</html^> >> server.js
-echo   \`); >> server.js
-echo }); >> server.js
-echo. >> server.js
-echo app.listen(PORT, () => { >> server.js
-echo   console.log(\`🚀 ${name} running on http://localhost:\${PORT}\`); >> server.js
-echo   console.log(\`📊 API available at http://localhost:\${PORT}/api/info\`); >> server.js
-echo }); >> server.js
-
-REM Create public directory for static files
-if not exist "public" mkdir "public"
-echo ^<!DOCTYPE html^> > public/index.html
-echo ^<html^> >> public/index.html
-echo ^<head^> >> public/index.html
-echo   ^<title^>Static Files - ${name}^</title^> >> public/index.html
-echo ^</head^> >> public/index.html
-echo ^<body^> >> public/index.html
-echo   ^<h1^>Static Files Folder^</h1^> >> public/index.html
-echo   ^<p^>This is the static files directory for ${name}^</p^> >> public/index.html
-echo ^</body^> >> public/index.html
-echo ^</html^> >> public/index.html
-
-echo.
-echo 📦 Installing dependencies...
-call npm install
-
-if %errorlevel% neq 0 (
-    echo ❌ ERROR: npm install failed
-    pause
-    exit /b 1
-)
-
-echo.
-echo Starting Node.js server...
-timeout /t 2 /nobreak >nul
-
-REM Start Node server in a new window and keep it running
-echo Starting server process...
-start "Server - ${name}" cmd /k "node server.js && pause"
-
-REM Wait a moment for server to start
-timeout /t 3 /nobreak >nul
-
-REM Open browser
-echo Opening browser...
-start http://localhost:%PORT%/
-
-echo.
-echo 🎉 SERVER IS RUNNING!
-echo 📍 Your app: http://localhost:%PORT%
-echo 📊 API: http://localhost:%PORT%/api/info
-echo 🖥️  Server running in new window
-echo 🛑 Close server window to stop the server
-echo.
-pause`,
-
-      python: (name, dir, defaultPort, htmlFile) => `@echo off
-chcp 65001 >nul
-title ${name} - Python Flask App
-echo ===============================
-echo    Starting ${name}
-echo ===============================
-echo.
-
-REM Set colors for better UX
-color 0A
-
-REM Check if Python is available
-python --version >nul 2>&1
-if %errorlevel% neq 0 (
-    echo ❌ ERROR: Python is not installed or not in PATH
-    echo Please install Python from https://python.org
-    pause
-    exit /b 1
-)
-
-REM Interactive port selection
-set /p "PORT=Enter port number [${defaultPort}]: "
-if "%PORT%"=="" set PORT=${defaultPort}
-
-REM Validate port is a number
-echo %PORT%| findstr /r "^[0-9][0-9]*$" >nul
-if %errorlevel% neq 0 (
-    echo ❌ ERROR: '%PORT%' is not a valid port number
-    pause
-    exit /b 1
-)
-
-REM Check if port is in valid range
-if %PORT% lss 1 (
-    echo ❌ ERROR: Port must be greater than 0
-    pause
-    exit /b 1
-)
-if %PORT% gtr 65535 (
-    echo ❌ ERROR: Port must be less than 65536
-    pause
-    exit /b 1
-)
-
-REM Create project directory
-if not exist "${dir}" (
-    echo Creating project directory...
-    mkdir "${dir}"
-)
-cd /d "${dir}"
-
-echo Creating Python Flask application...
-
-REM Create requirements.txt
-echo Flask^>^=2.3.0 > requirements.txt
-
-REM Create Python Flask app
-echo from flask import Flask, render_template, jsonify > app.py
-echo from datetime import datetime >> app.py
-echo. >> app.py
-echo app = Flask(__name__) >> app.py
-echo. >> app.py
-echo @app.route('/') >> app.py
-echo def home(): >> app.py
-echo     return render_template('index.html', name='${name}', port=${defaultPort}) >> app.py
-echo. >> app.py
-echo @app.route('/api/info') >> app.py
-echo def api_info(): >> app.py
-echo     return jsonify({ >> app.py
-echo         'name': '${name}', >> app.py
-echo         'version': '1.0.0', >> app.py
-echo         'port': ${defaultPort}, >> app.py
-echo         'timestamp': datetime.now().isoformat(), >> app.py
-echo         'framework': 'Flask' >> app.py
-echo     }) >> app.py
-echo. >> app.py
-echo if __name__ == '__main__': >> app.py
-echo     app.run(debug=True, host='0.0.0.0', port=%PORT%) >> app.py
-
-REM Create templates directory
-if not exist "templates" mkdir "templates"
-
-REM Create HTML template
-echo ^<!DOCTYPE html^> > templates/index.html
-echo ^<html^> >> templates/index.html
-echo ^<head^> >> templates/index.html
-echo   ^<title^>{{ name }}^</title^> >> templates/index.html
-echo   ^<meta charset="UTF-8"^> >> templates/index.html
-echo   ^<meta name="viewport" content="width=device-width, initial-scale=1.0"^> >> templates/index.html
-echo   ^<style^> >> templates/index.html
-echo     body { >> templates/index.html
-echo       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; >> templates/index.html
-echo       margin: 0; >> templates/index.html
-echo       padding: 0; >> templates/index.html
-echo       background: linear-gradient(135deg, #1a1a2e 0%%, #16213e 100%%); >> templates/index.html
-echo       color: white; >> templates/index.html
-echo       min-height: 100vh; >> templates/index.html
-echo     } >> templates/index.html
-echo     .container { >> templates/index.html
-echo       max-width: 1200px; >> templates/index.html
-echo       margin: 0 auto; >> templates/index.html
-echo       padding: 2rem; >> templates/index.html
-echo     } >> templates/index.html
-echo     .header { >> templates/index.html
-echo       background: rgba(0, 122, 204, 0.9); >> templates/index.html
-echo       color: white; >> templates/index.html
-echo       padding: 2rem; >> templates/index.html
-echo       text-align: center; >> templates/index.html
-echo       border-radius: 8px; >> templates/index.html
-echo       margin-bottom: 2rem; >> templates/index.html
-echo     } >> templates/index.html
-echo     .features { >> templates/index.html
-echo       background: rgba(255, 255, 255, 0.1); >> templates/index.html
-echo       padding: 1.5rem; >> templates/index.html
-echo       border-radius: 8px; >> templates/index.html
-echo     } >> templates/index.html
-echo     button { >> templates/index.html
-echo       background: #007acc; >> templates/index.html
-echo       color: white; >> templates/index.html
-echo       border: none; >> templates/index.html
-echo       padding: 10px 20px; >> templates/index.html
-echo       border-radius: 4px; >> templates/index.html
-echo       cursor: pointer; >> templates/index.html
-echo     } >> templates/index.html
-echo   ^</style^> >> templates/index.html
-echo ^</head^> >> templates/index.html
-echo ^<body^> >> templates/index.html
-echo   ^<div class="container"^> >> templates/index.html
-echo     ^<div class="header"^> >> templates/index.html
-echo       ^<h1^>🚀 {{ name }} - Flask App^</h1^> >> templates/index.html
-echo       ^<p^>Running on Python Flask!^</p^> >> templates/index.html
-echo     ^</div^> >> templates/index.html
-echo     ^<div class="features"^> >> templates/index.html
-echo       ^<h2^>Server Information:^</h2^> >> templates/index.html
-echo       ^<p^>Port: {{ port }}^</p^> >> templates/index.html
-echo       ^<p^>Framework: Flask^</p^> >> templates/index.html
-echo       ^<button onclick="fetchInfo()"^>Get API Info^</button^> >> templates/index.html
-echo       ^<div id="api-info"^>^</div^> >> templates/index.html
-echo     ^</div^> >> templates/index.html
-echo   ^</div^> >> templates/index.html
-echo   ^<script^> >> templates/index.html
-echo     async function fetchInfo() { >> templates/index.html
-echo       const response = await fetch('/api/info'); >> templates/index.html
-echo       const data = await response.json(); >> templates/index.html
-echo       document.getElementById('api-info').innerHTML = '^<pre^>' + JSON.stringify(data, null, 2) + '^</pre^>'; >> templates/index.html
-echo     } >> templates/index.html
-echo   ^</script^> >> templates/index.html
-echo ^</body^> >> templates/index.html
-echo ^</html^> >> templates/index.html
-
-echo.
-echo 📦 Installing Flask...
-pip install flask
-
-if %errorlevel% neq 0 (
-    echo ❌ ERROR: pip install failed
-    pause
-    exit /b 1
-)
-
-echo.
-echo Starting Flask server...
-timeout /t 2 /nobreak >nul
-
-REM Start Flask server in a new window and keep it running
-echo Starting server process...
-start "Server - ${name}" cmd /k "python app.py && pause"
-
-REM Wait a moment for server to start
-timeout /t 3 /nobreak >nul
-
-REM Open browser
-echo Opening browser...
-start http://localhost:%PORT%/
-
-echo.
-echo 🎉 SERVER IS RUNNING!
-echo 📍 Your app: http://localhost:%PORT%
-echo 📊 API: http://localhost:%PORT%/api/info
-echo 🖥️  Server running in new window
-echo 🛑 Close server window to stop the server
-echo.
-pause`,
-
-      php: (name, dir, defaultPort, htmlFile) => `@echo off
-chcp 65001 >nul
-title ${name} - PHP Website
-echo ===============================
-echo    Starting ${name}
-echo ===============================
-echo.
-
-REM Set colors for better UX
-color 0A
-
-REM Check if PHP is available
-php --version >nul 2>&1
-if %errorlevel% neq 0 (
-    echo ❌ ERROR: PHP is not installed or not in PATH
-    echo Please install PHP from https://php.net
-    pause
-    exit /b 1
-)
-
-REM Interactive port selection
-set /p "PORT=Enter port number [${defaultPort}]: "
-if "%PORT%"=="" set PORT=${defaultPort}
-
-REM Validate port is a number
-echo %PORT%| findstr /r "^[0-9][0-9]*$" >nul
-if %errorlevel% neq 0 (
-    echo ❌ ERROR: '%PORT%' is not a valid port number
-    pause
-    exit /b 1
-)
-
-REM Check if port is in valid range
-if %PORT% lss 1 (
-    echo ❌ ERROR: Port must be greater than 0
-    pause
-    exit /b 1
-)
-if %PORT% gtr 65535 (
-    echo ❌ ERROR: Port must be less than 65536
-    pause
-    exit /b 1
-)
-
-REM Create project directory
-if not exist "${dir}" (
-    echo Creating project directory...
-    mkdir "${dir}"
-)
-cd /d "${dir}"
-
-echo Creating PHP application...
-
-REM Create PHP index file
-echo ^<!DOCTYPE html^> > index.php
-echo ^<html^> >> index.php
-echo ^<head^> >> index.php
-echo   ^<title^>${name}^</title^> >> index.php
-echo   ^<meta charset="UTF-8"^> >> index.php
-echo   ^<meta name="viewport" content="width=device-width, initial-scale=1.0"^> >> index.php
-echo   ^<style^> >> index.php
-echo     body { >> index.php
-echo       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; >> index.php
-echo       margin: 0; >> index.php
-echo       padding: 0; >> index.php
-echo       background: linear-gradient(135deg, #1a1a2e 0%%, #16213e 100%%); >> index.php
-echo       color: white; >> index.php
-echo       min-height: 100vh; >> index.php
-echo     } >> index.php
-echo     .container { >> index.php
-echo       max-width: 1200px; >> index.php
-echo       margin: 0 auto; >> index.php
-echo       padding: 2rem; >> index.php
-echo     } >> index.php
-echo     .header { >> index.php
-echo       background: rgba(0, 122, 204, 0.9); >> index.php
-echo       color: white; >> index.php
-echo       padding: 2rem; >> index.php
-echo       text-align: center; >> index.php
-echo       border-radius: 8px; >> index.php
-echo       margin-bottom: 2rem; >> index.php
-echo     } >> index.php
-echo     .info-box { >> index.php
-echo       background: rgba(255, 255, 255, 0.1); >> index.php
-echo       padding: 1.5rem; >> index.php
-echo       border-radius: 8px; >> index.php
-echo       margin: 1rem 0; >> index.php
-echo     } >> index.php
-echo   ^</style^> >> index.php
-echo ^</head^> >> index.php
-echo ^<body^> >> index.php
-echo   ^<div class="container"^> >> index.php
-echo     ^<div class="header"^> >> index.php
-echo       ^<h1^>🚀 ${name} - PHP Website^</h1^> >> index.php
-echo       ^<p^>Powered by PHP Built-in Server^</p^> >> index.php
-echo     ^</div^> >> index.php
-echo     ^<div class="info-box"^> >> index.php
-echo       ^<h2^>Server Information^</h2^> >> index.php
-echo       ^<p^>Server: http://localhost:%PORT%^</p^> >> index.php
-echo       ^<?php >> index.php
-echo         echo "^<p^>PHP Version: " . phpversion() . "^</p^>"; >> index.php
-echo         echo "^<p^>Server Time: " . date('Y-m-d H:i:s') . "^</p^>"; >> index.php
-echo         echo "^<p^>OS: " . php_uname('s') . " " . php_uname('r') . "^</p^>"; >> index.php
-echo       ?^> >> index.php
-echo     ^</div^> >> index.php
-echo     ^<div class="info-box"^> >> index.php
-echo       ^<h2^>PHP Configuration^</h2^> >> index.php
-echo       ^<?php >> index.php
-echo         echo "^<p^>Memory Limit: " . ini_get('memory_limit') . "^</p^>"; >> index.php
-echo         echo "^<p^>Max Execution Time: " . ini_get('max_execution_time') . " seconds^</p^>"; >> index.php
-echo         echo "^<p^>Upload Max Filesize: " . ini_get('upload_max_filesize') . "^</p^>"; >> index.php
-echo       ?^> >> index.php
-echo     ^</div^> >> index.php
-echo   ^</div^> >> index.php
-echo ^</body^> >> index.php
-echo ^</html^> >> index.php
-
-REM Create additional PHP example files
-echo ^<?php >> api.php
-echo // ${name} - API Example >> api.php
-echo header('Content-Type: application/json'); >> api.php
-echo echo json_encode([ >> api.php
-echo   'name' => '${name}', >> api.php
-echo   'version' => '1.0.0', >> api.php
-echo   'port' => %PORT%, >> api.php
-echo   'timestamp' => date('c'), >> api.php
-echo   'php_version' => phpversion() >> api.php
-echo ]); >> api.php
-echo ?^> >> api.php
-
-echo.
-echo Starting PHP built-in server...
-timeout /t 2 /nobreak >nul
-
-REM Start PHP server in a new window and keep it running
-echo Starting server process...
-start "Server - ${name}" cmd /k "php -S localhost:%PORT% && pause"
-
-REM Wait a moment for server to start
-timeout /t 3 /nobreak >nul
-
-REM Open browser
-echo Opening browser...
-start http://localhost:%PORT%/
-
-echo.
-echo 🎉 SERVER IS RUNNING!
-echo 📍 Your app: http://localhost:%PORT%
-echo 📊 API: http://localhost:%PORT%/api.php
-echo 🖥️  Server running in new window
-echo 🛑 Close server window to stop the server
-echo.
-pause`
-    };
-
-    // ============ PROJECT SELECTION LOGIC ============
-    projectCards.forEach(card => {
-      card.addEventListener('click', function() {
-        const type = this.dataset.type;
-        projectType.value = type;
-        structurePreview.innerHTML = structureTemplates[type];
-        
-        // Show batch generator, hide selection
-        projectSelection.classList.add('hidden');
-        batchGenerator.classList.remove('hidden');
-        
-        // Auto-fill project name based on type
-        const typeNames = {
-          static: 'MiSitioWeb',
-          node: 'MiAppWeb', 
-          python: 'MiAppPython',
-          php: 'MiSitioPHP'
         };
-        projectName.value = typeNames[type];
-      });
-    });
-
-    btnBackToSelection.addEventListener('click', function() {
-      batchGenerator.classList.add('hidden');
-      projectSelection.classList.remove('hidden');
-    });
-
-    // Update structure preview when type changes
-    projectType.addEventListener('change', function() {
-      structurePreview.innerHTML = structureTemplates[this.value];
-    });
-
-    // ============ BATCH FILE GENERATOR FUNCTIONS ============
-    function downloadBatchFile(content, filename) {
-      const blob = new Blob([content], { type: 'application/bat' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+        
+        if (data) {
+          options.body = JSON.stringify(data);
+        }
+        
+        const response = await fetch(`${BACKEND_URL}${endpoint}`, options);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        return await response.json();
+      } catch (error) {
+        console.error('API call failed:', error);
+        showError(`Backend connection failed: ${error.message}`);
+        throw error;
+      }
     }
 
-    btnGenerateBatch.addEventListener('click', async function() {
-      const name = projectName.value.trim() || 'MyProject';
-      const type = projectType.value;
-      const dir = projectDir.value.trim();
-      const port = projectPort.value || '5000';
-      const htmlFile = projectHtml.value.trim() || 'index.html';
+    // ============ PROJECT CREATOR ============
+    function selectProjectType(type) {
+      document.getElementById('project-type').value = type;
+      
+      const typeNames = {
+        static: 'MyStaticSite',
+        node: 'MyNodeApp', 
+        python: 'MyPythonApp',
+        php: 'MyPHPSite'
+      };
+      
+      document.getElementById('project-name').value = typeNames[type];
+      document.querySelector('.bg-gray-900.rounded-xl.terminal-border.p-6.mb-6').classList.add('hidden');
+      document.getElementById('batch-generator').classList.remove('hidden');
+      
+      updateProjectPreview();
+    }
 
-      if (!dir) {
-        showError('Please specify a project directory');
-        return;
-      }
+    function showProjectSelection() {
+      document.getElementById('batch-generator').classList.add('hidden');
+      document.querySelector('.bg-gray-900.rounded-xl.terminal-border.p-6.mb-6').classList.remove('hidden');
+    }
+
+    function updateProjectPreview() {
+      const projectName = document.getElementById('project-name').value || 'MyProject';
+      const projectLocation = document.getElementById('project-location').value;
+      const projectType = document.getElementById('project-type').value;
+      const port = document.getElementById('project-port').value || '5000';
+      const mainFile = document.getElementById('project-mainfile').value || 'index.html';
+      
+      const fullPath = `${projectLocation}\\${projectName}`;
+      
+      const preview = document.getElementById('project-preview');
+      const structureTemplates = {
+        static: `📁 ${projectName}/
+  ├── 📄 ${mainFile}
+  ├── 🎨 css/
+  │   └── style.css
+  ├── ⚡ js/
+  │   └── script.js
+  ├── 🖼️ images/
+  └── 🔧 start_server.bat
+          
+🌐 http://localhost:${port}`,
+
+        node: `📁 ${projectName}/
+  ├── 📦 package.json
+  ├── 🖥️ server.js
+  ├── 🌐 public/
+  │   ├── ${mainFile}
+  │   ├── css/style.css
+  │   └── js/app.js
+  ├── 📊 src/
+  │   └── routes.js
+  └── 🔧 start_server.bat
+          
+🌐 http://localhost:${port}`,
+
+        python: `📁 ${projectName}/
+  ├── 🐍 app.py
+  ├── 📋 requirements.txt
+  ├── 🎨 templates/
+  │   └── ${mainFile}
+  ├── 🎨 static/
+  │   ├── css/style.css
+  │   └── js/script.js
+  ├── ⚙️ config.py
+  └── 🔧 start_server.bat
+          
+🌐 http://localhost:${port}`,
+
+        php: `📁 ${projectName}/
+  ├── 📄 ${mainFile}
+  ├── 🎨 css/style.css
+  ├── ⚡ js/script.js
+  ├── 📁 includes/
+  │   └── functions.php
+  ├── 📁 uploads/
+  └── 🔧 start_server.bat
+          
+🌐 http://localhost:${port}`
+      };
+      
+      preview.innerHTML = structureTemplates[projectType] || 'Select a project type to see preview...';
+    }
+
+    function createProjectBatchFile(includeFolders = false) {
+      const name = document.getElementById('project-name').value.trim() || 'MyProject';
+      const type = document.getElementById('project-type').value;
+      const location = document.getElementById('project-location').value.trim();
+      const port = document.getElementById('project-port').value || '5000';
+      const mainFile = document.getElementById('project-mainfile').value.trim() || 'index.html';
+      const openBrowser = document.getElementById('auto-open-browser')?.checked || true;
+      const createFolders = includeFolders || document.getElementById('create-folders')?.checked || false;
+      const sampleContent = document.getElementById('sample-content')?.checked || false;
 
       if (!name) {
-        showError('Please specify a project name');
+        showError('❌ Please enter a project name');
         return;
       }
 
-      // Generate the batch file content
-      const batchCode = batchTemplates[type](name, dir, port, htmlFile);
+      if (!location) {
+        showError('❌ Please specify a project location');
+        return;
+      }
+
+      const batchTemplates = {
+        static: (name, location, port, mainFile, openBrowser, createFolders) => {
+          let batch = `@echo off\nchcp 65001 >nul\ntitle ${name} - Static Website\ncolor 0A\n\necho ===============================\necho    Starting ${name}\necho ===============================\necho.\n`;
+          
+          batch += `cd /d "${location}\\${name}"\n\n`;
+          
+          if (createFolders) {
+            batch += `echo Creating project structure...\n`;
+            batch += `if not exist "css" mkdir "css"\n`;
+            batch += `if not exist "js" mkdir "js"\n`;
+            batch += `if not exist "images" mkdir "images"\n`;
+            batch += `echo.\n`;
+          }
+          
+          batch += `echo Starting Python HTTP Server on port ${port}...\n`;
+          batch += `start "Server - ${name}" cmd /k "python -m http.server ${port}"\n`;
+          
+          if (openBrowser) {
+            batch += `timeout /t 2 /nobreak >nul\nstart http://localhost:${port}\n`;
+          }
+          
+          batch += `echo.\necho Server started on http://localhost:${port}\n`;
+          if (openBrowser) batch += `echo Browser should open automatically...\n`;
+          batch += `pause`;
+          
+          return batch;
+        },
+
+        node: (name, location, port, mainFile, openBrowser, createFolders) => {
+          let batch = `@echo off\nchcp 65001 >nul\ntitle ${name} - Node.js Server\ncolor 0B\n\necho ===============================\necho    Starting ${name}\necho ===============================\necho.\n`;
+          
+          batch += `cd /d "${location}\\${name}"\n\n`;
+          
+          if (createFolders) {
+            batch += `echo Creating project structure...\n`;
+            batch += `if not exist "public" mkdir "public"\n`;
+            batch += `if not exist "src" mkdir "src"\n`;
+            batch += `echo.\n`;
+          }
+          
+          batch += `echo Starting Node.js Server on port ${port}...\n`;
+          batch += `start "Server - ${name}" cmd /k "node server.js"\n`;
+          
+          if (openBrowser) {
+            batch += `timeout /t 2 /nobreak >nul\nstart http://localhost:${port}\n`;
+          }
+          
+          batch += `echo.\necho Server started on http://localhost:${port}\n`;
+          if (openBrowser) batch += `echo Browser should open automatically...\n`;
+          batch += `pause`;
+          
+          return batch;
+        },
+
+        python: (name, location, port, mainFile, openBrowser, createFolders) => {
+          let batch = `@echo off\nchcp 65001 >nul\ntitle ${name} - Python Flask\ncolor 0E\n\necho ===============================\necho    Starting ${name}\necho ===============================\necho.\n`;
+          
+          batch += `cd /d "${location}\\${name}"\n\n`;
+          
+          if (createFolders) {
+            batch += `echo Creating project structure...\n`;
+            batch += `if not exist "templates" mkdir "templates"\n`;
+            batch += `if not exist "static" mkdir "static"\n`;
+            batch += `if not exist "static/css" mkdir "static/css"\n`;
+            batch += `if not exist "static/js" mkdir "static/js"\n`;
+            batch += `echo.\n`;
+          }
+          
+          batch += `echo Starting Python Flask on port ${port}...\n`;
+          batch += `start "Server - ${name}" cmd /k "python app.py"\n`;
+          
+          if (openBrowser) {
+            batch += `timeout /t 3 /nobreak >nul\nstart http://localhost:${port}\n`;
+          }
+          
+          batch += `echo.\necho Server started on http://localhost:${port}\n`;
+          if (openBrowser) batch += `echo Browser should open automatically...\n`;
+          batch += `pause`;
+          
+          return batch;
+        },
+
+        php: (name, location, port, mainFile, openBrowser, createFolders) => {
+          let batch = `@echo off\nchcp 65001 >nul\ntitle ${name} - PHP Server\ncolor 0D\n\necho ===============================\necho    Starting ${name}\necho ===============================\necho.\n`;
+          
+          batch += `cd /d "${location}\\${name}"\n\n`;
+          
+          if (createFolders) {
+            batch += `echo Creating project structure...\n`;
+            batch += `if not exist "css" mkdir "css"\n`;
+            batch += `if not exist "js" mkdir "js"\n`;
+            batch += `if not exist "includes" mkdir "includes"\n`;
+            batch += `if not exist "uploads" mkdir "uploads"\n`;
+            batch += `echo.\n`;
+          }
+          
+          batch += `echo Starting PHP Server on port ${port}...\n`;
+          batch += `start "Server - ${name}" cmd /k "php -S localhost:${port}"\n`;
+          
+          if (openBrowser) {
+            batch += `timeout /t 2 /nobreak >nul\nstart http://localhost:${port}\n`;
+          }
+          
+          batch += `echo.\necho Server started on http://localhost:${port}\n`;
+          if (openBrowser) batch += `echo Browser should open automatically...\n`;
+          batch += `pause`;
+          
+          return batch;
+        }
+      };
+
+      const batchCode = batchTemplates[type](name, location, port, mainFile, openBrowser, createFolders);
       const filename = `start_${name.replace(/\s+/g, '_').toLowerCase()}.bat`;
       
-      // Download the batch file
       downloadBatchFile(batchCode, filename);
       
-      // Track the creation in stats
-      await StatsManager.trackBatCreation(type);
+      document.getElementById('download-filename').textContent = filename;
+      document.getElementById('download-success').classList.remove('hidden');
       
-      // Show success message
-      downloadFilename.textContent = filename;
-      downloadSuccess.classList.remove('hidden');
-      clearMessages();
-      
-      showSuccess(`✅ .bat file created and tracked! You're user #${StatsManager.currentStats.total_bats_created}`);
-    });
-
-    // Close success message
-    btnCloseSuccess.addEventListener('click', function() {
-      downloadSuccess.classList.add('hidden');
-    });
-
-    // Cancel button
-    btnCancelBatch.addEventListener('click', function() {
-      projectName.value = '';
-      projectPort.value = '5000';
-      projectHtml.value = 'index.html';
-      downloadSuccess.classList.add('hidden');
-      clearMessages();
-      batchGenerator.classList.add('hidden');
-      projectSelection.classList.remove('hidden');
-    });
-
-    // ============ ORIGINAL PORT SCANNER FUNCTIONS ============
-    function badge(status){
-      if(status === "listening") return '<span class="badge badge-green">LISTENING</span>';
-      if(status === "open") return '<span class="badge badge-blue">OPEN</span>';
-      if(status === "running") return '<span class="badge badge-purple">RUNNING</span>';
-      if(status === "stopped") return '<span class="badge badge-orange">STOPPED</span>';
-      return '<span class="badge badge-gray">CLOSED</span>';
+      showSuccess(`✅ Batch file "${filename}" created successfully!`);
     }
 
-    function render(ports, servers = []){
-      rows.innerHTML = "";
-      serverRows.innerHTML = "";
-      let tcp=0, udp=0;
+    // ============ PORT SCANNER ============
+    document.getElementById('btn-scan').addEventListener('click', scanPorts);
 
-      if (ports && ports.length > 0) {
-        for (const p of ports) {
-          if(p.protocol === "TCP") tcp++; else if(p.protocol === "UDP") udp++;
-          const proc = p.processName ? `${p.processName}${p.pid ? " (PID "+p.pid+")":""}` : "—";
-          const canKill = !!p.pid && p.pid !== 4;
-          const tr = document.createElement("tr");
-          tr.className = "border-t border-cyan-800 hover:bg-gray-800";
-          tr.innerHTML = `
-            <td class="p-3 font-medium text-yellow-400">${p.port}</td>
-            <td class="p-3 text-cyan-400">${p.protocol}</td>
-            <td class="p-3">${badge(p.status)}</td>
-            <td class="p-3 text-green-400">${p.service || "Unknown"}</td>
-            <td class="p-3 text-white">${proc}</td>
-            <td class="p-3 text-right">
-              <button data-port="${p.port}" data-proto="${p.protocol}" data-pid="${p.pid||""}" data-service="${p.service||""}" data-proc="${p.processName||""}"
-                class="px-3 py-1.5 rounded border border-red-500 text-red-400 hover:bg-red-900 hover:text-white transition-all ${canKill?"":"opacity-40 cursor-not-allowed"}"
-                ${canKill? "":"disabled"}>TERMINATE</button>
-            </td>`;
-          rows.appendChild(tr);
-        }
+    async function scanPorts() {
+        const scanRange = document.getElementById('scan-range').value;
+        const scanType = document.getElementById('scan-type').value;
+        const scanButton = document.getElementById('btn-scan');
+        const progressBar = document.getElementById('scan-progress');
+        const progressText = document.getElementById('scan-progress-text');
+        const progressBarFill = document.getElementById('scan-progress-bar');
 
-        rows.querySelectorAll("button[data-pid]").forEach(btn=>{
-          btn.onclick = () => {
-            const pid = Number(btn.dataset.pid||"");
-            modalData = {
-              port: Number(btn.dataset.port),
-              protocol: btn.dataset.proto,
-              pid,
-              service: btn.dataset.service || "Unknown",
-              processName: btn.dataset.proc || "Unknown"
-            };
-            mPort.textContent = `${modalData.port}/${modalData.protocol}`;
-            mService.textContent = modalData.service;
-            mProc.textContent = modalData.processName;
-            mPid.textContent = modalData.pid || "—";
-            modal.classList.remove("hidden");
-          };
-        });
-      }
-
-      if (servers && servers.length > 0) {
-        for (const s of servers) {
-          const tr = document.createElement("tr");
-          tr.className = "border-t border-cyan-800 hover:bg-gray-800";
-          tr.innerHTML = `
-            <td class="p-3 font-medium text-purple-400">${s.name}</td>
-            <td class="p-3 text-yellow-400">${s.port}</td>
-            <td class="p-3 text-cyan-400">${s.template}</td>
-            <td class="p-3 text-green-400">${s.pid}</td>
-            <td class="p-3">${badge('running')}</td>
-            <td class="p-3 text-right">
-              <button data-id="${s.id}" data-pid="${s.pid}"
-                class="px-3 py-1.5 rounded border border-orange-500 text-orange-400 hover:bg-orange-900 hover:text-white transition-all">
-                STOP SERVER
-              </button>
-            </td>`;
-          serverRows.appendChild(tr);
-        }
-
-        serverRows.querySelectorAll("button[data-id]").forEach(btn=>{
-          btn.onclick = async () => {
-            const serverId = btn.dataset.id;
-            const pid = btn.dataset.pid;
-            if(confirm(`Stop server ${pid}?`)) {
-              try {
-                const data = await apiFetch("/api/servers/stop", {
-                  method: "POST",
-                  body: JSON.stringify({ id: serverId })
-                });
-                if(data.ok) await scan();
-              } catch(e) {
-                showError("Stop server error: " + e.message);
-              }
-            }
-          };
-        });
-      }
-
-      statTCP.textContent = tcp;
-      statUDP.textContent = udp;
-      statTotal.textContent = ports ? ports.length : 0;
-      statServers.textContent = servers ? servers.length : 0;
-      statTime.textContent = new Date().toLocaleTimeString();
-
-      empty.classList.toggle("hidden", ports && ports.length !== 0);
-      wrap.classList.toggle("hidden", !ports || ports.length === 0);
-    }
-
-    async function scan(){
-      try{
-        clearMessages();
-        btnScan.disabled = true; 
-        spin.classList.remove("hidden");
-
-        const portsData = await apiFetch("/api/ports/scan");
-        const serversData = await apiFetch("/api/servers/list").catch(()=>({ok:true, servers:[]}));
-        render(portsData.ports || [], serversData.servers || []);
-
-      } catch(e) {
-        console.error("Scan error:", e);
-        showError("Scan error: " + e.message);
-        empty.classList.remove("hidden");
-        wrap.classList.add("hidden");
-      } finally {
-        btnScan.disabled = false; 
-        spin.classList.add("hidden");
-      }
-    }
-
-    async function launchServer(){
-      try {
-        clearMessages();
-        const name = serverName.value.trim();
-        const cwd = serverCwd.value.trim();
-        const port = serverPort.value ? parseInt(serverPort.value) : null;
-        const template = serverTemplate.value;
-        const htmlFile = serverHtml.value.trim();
-
-        if(!name) return showError("Server name is required");
-        if(!cwd) return showError("Working directory is required");
-        if(!port) return showError("Port number is required");
-        if(port < 1 || port > 65535) return showError("Port must be between 1 and 65535");
-
-        btnLaunch.disabled = true;
-        btnLaunch.textContent = "LAUNCHING...";
-
-        // First check if port is available
         try {
-          const portsData = await apiFetch("/api/ports/scan");
-          const portInUse = portsData.ports?.some(p => p.port === port && p.status === "listening");
-          if (portInUse) {
-            throw new Error(`Port ${port} is already in use. Please choose a different port.`);
-          }
-        } catch (e) {
-          // If port scan fails, continue anyway (might be permission issue)
-          console.warn("Port scan failed, continuing with launch:", e.message);
+            // Show loading state
+            scanButton.classList.add('loading');
+            progressBar.classList.remove('hidden');
+            progressBarFill.style.width = '10%';
+            progressText.textContent = '10%';
+
+            showSuccess('🚀 Starting real port scan...');
+
+            // Call backend API
+            const result = await apiCall('/scan-ports', 'POST', {
+                range: scanRange,
+                type: scanType
+            });
+
+            // Update progress
+            progressBarFill.style.width = '100%';
+            progressText.textContent = '100%';
+
+            // Render results
+            renderPorts(result.ports);
+            updateSystemStats();
+            showSuccess(`✅ Scan completed! Found ${result.ports.length} active ports`);
+
+        } catch (error) {
+            showError('❌ Port scan failed. Make sure backend is running.');
+        } finally {
+            // Reset UI
+            scanButton.classList.remove('loading');
+            setTimeout(() => {
+                progressBar.classList.add('hidden');
+                progressBarFill.style.width = '0%';
+            }, 1000);
+        }
+    }
+
+    function renderPorts(ports) {
+        const tbody = document.getElementById('ports-table-body');
+        tbody.innerHTML = '';
+        
+        if (ports.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center py-8 text-gray-500">
+                        No active ports found in the selected range.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
+        ports.forEach(port => {
+            const tr = document.createElement('tr');
+            tr.className = 'border-t border-cyan-800 hover:bg-gray-800';
+            tr.innerHTML = `
+                <td class="p-3 font-medium text-yellow-400">${port.port}</td>
+                <td class="p-3 text-cyan-400">${port.protocol}</td>
+                <td class="p-3 text-green-400">${port.processName || 'Unknown'}</td>
+                <td class="p-3 font-mono text-white">${port.pid || 'N/A'}</td>
+                <td class="p-3">
+                    <span class="px-2 py-1 rounded-full text-xs ${port.status === 'LISTENING' ? 'bg-green-900 text-green-400' : 'bg-gray-700 text-gray-400'}">
+                        ${port.status || 'UNKNOWN'}
+                    </span>
+                </td>
+                <td class="p-3 text-right">
+                    ${port.pid ? `
+                    <button onclick="killProcess(${port.pid}, ${port.port})" 
+                            class="px-3 py-1.5 rounded border border-red-500 text-red-400 hover:bg-red-900 hover:text-white transition-all text-sm">
+                        TERMINATE
+                    </button>
+                    ` : ''}
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+        
+        document.getElementById('active-ports-count').textContent = ports.length;
+    }
+
+    async function killProcess(pid, port) {
+        if (confirm(`Terminate process PID ${pid} using port ${port}?`)) {
+            try {
+                await apiCall('/kill-process', 'POST', { pid: pid });
+                showSuccess(`✅ Process ${pid} terminated`);
+                scanPorts(); // Refresh the list
+            } catch (error) {
+                showError('❌ Failed to terminate process');
+            }
+        }
+    }
+
+    // ============ QUICK SERVER LAUNCHER ============
+    async function launchQuickServer(type) {
+        let port, dir, file;
+        
+        switch(type) {
+            case 'static':
+                port = document.getElementById('quick-static-port').value || 8000;
+                dir = document.getElementById('quick-static-dir').value || '.';
+                break;
+            case 'node':
+                port = document.getElementById('quick-node-port').value || 3000;
+                file = document.getElementById('quick-node-file').value || 'app.js';
+                break;
+            case 'python':
+                port = document.getElementById('quick-python-port').value || 5000;
+                file = document.getElementById('quick-python-file').value || 'app.py';
+                break;
+            case 'php':
+                port = document.getElementById('quick-php-port').value || 8080;
+                dir = document.getElementById('quick-php-dir').value || '.';
+                break;
         }
 
-        const data = await apiFetch("/api/servers/launch", {
-          method: "POST",
-          body: JSON.stringify({ name, template, port, cwd, htmlFile })
+        try {
+            showSuccess(`🚀 Starting ${type} server on port ${port}...`);
+            
+            await apiCall('/start-server', 'POST', {
+                type: type,
+                port: parseInt(port),
+                directory: dir,
+                file: file
+            });
+
+            showSuccess(`✅ ${type.toUpperCase()} server started successfully on port ${port}!`);
+            
+            // Auto-open browser
+            setTimeout(() => {
+                window.open(`http://localhost:${port}`, '_blank');
+            }, 1000);
+
+        } catch (error) {
+            showError(`❌ Failed to start ${type} server: ${error.message}`);
+        }
+    }
+
+    // ============ MULTI-SERVER BATCH CREATOR ============
+    function createMultiServerBatch() {
+        const batchName = document.getElementById('multi-batch-name').value || 'start_all_servers';
+        const openBrowser = document.getElementById('multi-batch-browser').value === 'yes';
+        
+        let batchContent = `@echo off\nchcp 65001 >nul\ntitle Multi-Server Launcher\ncolor 0A\n\necho ===============================\necho    Starting Multiple Servers\necho ===============================\necho.\n`;
+        
+        if (document.getElementById('include-static').checked) {
+            const port = document.getElementById('quick-static-port').value || 8000;
+            const dir = document.getElementById('quick-static-dir').value || '.';
+            batchContent += `echo Starting Static Server on port ${port}...\nstart "Static Server" cmd /k "cd /d ${dir} && python -m http.server ${port}"\n`;
+            if (openBrowser) {
+                batchContent += `timeout /t 2 /nobreak >nul\nstart http://localhost:${port}\n`;
+            }
+        }
+        
+        if (document.getElementById('include-node').checked) {
+            const port = document.getElementById('quick-node-port').value || 3000;
+            const file = document.getElementById('quick-node-file').value || 'app.js';
+            batchContent += `echo Starting Node.js Server on port ${port}...\nstart "Node.js Server" cmd /k "node ${file}"\n`;
+            if (openBrowser) {
+                batchContent += `timeout /t 2 /nobreak >nul\nstart http://localhost:${port}\n`;
+            }
+        }
+        
+        if (document.getElementById('include-python').checked) {
+            const port = document.getElementById('quick-python-port').value || 5000;
+            const file = document.getElementById('quick-python-file').value || 'app.py';
+            batchContent += `echo Starting Python Flask on port ${port}...\nstart "Python Flask" cmd /k "python ${file}"\n`;
+            if (openBrowser) {
+                batchContent += `timeout /t 3 /nobreak >nul\nstart http://localhost:${port}\n`;
+            }
+        }
+        
+        if (document.getElementById('include-php').checked) {
+            const port = document.getElementById('quick-php-port').value || 8080;
+            const dir = document.getElementById('quick-php-dir').value || '.';
+            batchContent += `echo Starting PHP Server on port ${port}...\nstart "PHP Server" cmd /k "cd /d ${dir} && php -S localhost:${port}"\n`;
+            if (openBrowser) {
+                batchContent += `timeout /t 2 /nobreak >nul\nstart http://localhost:${port}\n`;
+            }
+        }
+        
+        batchContent += `\necho All servers started!\necho.\npause`;
+        
+        downloadBatchFile(batchContent, `${batchName}.bat`);
+        showSuccess(`✅ Multi-server batch file "${batchName}.bat" created successfully!`);
+    }
+
+    // ============ SERVER MANAGER ============
+    document.getElementById('btn-launch').addEventListener('click', launchServer);
+
+    async function launchServer() {
+        const name = document.getElementById('server-name').value.trim();
+        const cwd = document.getElementById('server-cwd').value.trim();
+        const port = document.getElementById('server-port').value;
+        const template = document.getElementById('server-template').value;
+
+        if(!name) return showError("❌ Server name is required");
+        if(!cwd) return showError("❌ Working directory is required");
+        if(!port) return showError("❌ Port number is required");
+
+        try {
+            showSuccess(`🚀 Launching ${name} on port ${port}...`);
+
+            await apiCall('/launch-server', 'POST', {
+                name: name,
+                working_directory: cwd,
+                port: parseInt(port),
+                template: template
+            });
+
+            showSuccess(`✅ Server "${name}" launched successfully!`);
+            addRunningServer(name, port, template);
+            
+        } catch (error) {
+            showError(`❌ Failed to launch server: ${error.message}`);
+        }
+    }
+
+    function addRunningServer(name, port, type) {
+        const container = document.getElementById('running-servers');
+        
+        if (container.querySelector('.text-gray-500')) {
+            container.innerHTML = '';
+        }
+        
+        const serverDiv = document.createElement('div');
+        serverDiv.className = 'bg-gray-800 p-4 rounded-lg border border-green-500';
+        serverDiv.innerHTML = `
+            <div class="flex justify-between items-center">
+                <div>
+                    <h4 class="text-green-400 font-semibold">${name}</h4>
+                    <p class="text-gray-400 text-sm">Port ${port} • ${type}</p>
+                </div>
+                <div class="flex gap-2">
+                    <button class="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">Restart</button>
+                    <button class="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700">Stop</button>
+                </div>
+            </div>
+        `;
+        
+        container.appendChild(serverDiv);
+    }
+
+    // ============ SYSTEM MONITOR ============
+    async function updateSystemStats() {
+        try {
+            const stats = await apiCall('/system-stats');
+            
+            document.getElementById('cpu-usage').textContent = `${stats.cpu_usage}%`;
+            document.getElementById('memory-usage').textContent = `${stats.memory_usage}%`;
+            document.getElementById('cpu-bar').style.width = `${stats.cpu_usage}%`;
+            document.getElementById('memory-bar').style.width = `${stats.memory_usage}%`;
+            document.getElementById('active-ports-count').textContent = stats.active_ports;
+            
+        } catch (error) {
+            console.error('Failed to fetch system stats:', error);
+        }
+    }
+
+    async function refreshSystemStats() {
+        showSuccess('🔄 Refreshing system statistics...');
+        await updateSystemStats();
+    }
+
+    // ============ INITIALIZATION ============
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize project creator event listeners
+        const projectInputs = ['project-name', 'project-type', 'project-port', 'project-mainfile'];
+        projectInputs.forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('input', updateProjectPreview);
+            }
         });
-
-        if(!data.ok) throw new Error(data.error || "Launch failed");
-
-        // Clear form
-        serverName.value = "";
-        serverCwd.value = "";
-        serverPort.value = "";
-        serverHtml.value = "";
-
-        showSuccess("✅ Server launched successfully!");
-        await scan();
-
-      } catch(e) {
-        showError("Launch error: " + e.message);
-      } finally {
-        btnLaunch.disabled = false;
-        btnLaunch.textContent = "🚀 LAUNCH SERVER";
-      }
-    }
-
-    async function killPID(pid){
-      return apiFetch("/api/ports/kill", {
-        method: "POST",
-        body: JSON.stringify({ pid })
-      });
-    }
-
-    // Event listeners
-    btnScan.onclick = scan;
-    btnLaunch.onclick = launchServer;
-
-    btnModalCancel.onclick = () => { modal.classList.add("hidden"); };
-    btnModalClose.onclick = btnModalCancel.onclick;
-
-    btnModalConfirm.onclick = async () => {
-      if(!modalData?.pid){ btnModalCancel.onclick(); return; }
-      btnModalConfirm.disabled = true; 
-      btnModalConfirm.textContent = "TERMINATING…";
-      try{
-        const data = await killPID(modalData.pid);
-        if(!data.ok) throw new Error(data.error || "Termination failed");
-        await scan();
-      } catch(e) {
-        showError("Termination error: " + e.message);
-      } finally {
-        btnModalConfirm.disabled = false; 
-        btnModalConfirm.textContent = "TERMINATE";
-        btnModalCancel.onclick();
-      }
-    };
-
-    // Default working directory suggestion (non-destructive)
-    try {
-      const parts = window.location.pathname.split('/').slice(0,-1).join('/');
-      serverCwd.value = parts || "C:\\";
-    } catch { serverCwd.value = "C:\\"; }
-
-    // Initial scan is gated behind a quick connection test so we don't time out noisily
-    (async () => {
-      try {
-        await apiFetch('/api/servers/list', { timeoutMs: 3000 }).catch(()=>({}));
-        scan();
-      } catch (e) {
-        showError(`Heads up: cannot reach ${Settings.base}. Set the correct API Base URL above and click "Test Connection".`);
-      }
-    })();
+        
+        // Initialize create buttons
+        const btnCreateProject = document.getElementById('btn-create-project');
+        const btnCreateProjectBat = document.getElementById('btn-create-project-bat');
+        
+        if (btnCreateProject) {
+            btnCreateProject.addEventListener('click', () => createProjectBatchFile(false));
+        }
+        
+        if (btnCreateProjectBat) {
+            btnCreateProjectBat.addEventListener('click', () => createProjectBatchFile(true));
+        }
+        
+        updateProjectPreview();
+        updateSystemStats();
+        
+        // Refresh stats every 10 seconds
+        setInterval(updateSystemStats, 10000);
+    });
   </script>
 </body>
 </html>
