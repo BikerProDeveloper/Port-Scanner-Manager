@@ -1,0 +1,14 @@
+{
+  "name": "port-scanner-manager",
+  "version": "1.0.0",
+  "description": "Port Scanner & Server Manager - Full Stack Network Tool",
+  "main": "server.py",
+  "scripts": {
+    "start": "python server.py",
+    "build": "echo 'No build process needed for Python project'"
+  },
+  "keywords": ["port-scanner", "server-manager", "python", "flask"],
+  "author": "BikerProDeveloper",
+  "license": "MIT",
+  "private": true
+}
