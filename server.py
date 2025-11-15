@@ -172,4 +172,4 @@ def system_stats():
 
 if __name__ == "__main__":
     # Bind on all interfaces for localhost use and future LAN access
-    app.run(host="0.0.0.0", port=5502)
+    app.run(host="0.0.0.0", port=5002)  # ← Change 5502 to 5002
